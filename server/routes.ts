@@ -13,16 +13,18 @@ export function registerRoutes(app: Express): Server {
 
   // Get all logs
   app.get("/api/logs", async (_req, res) => {
+    console.log('API: Fetching logs from Supabase...');
     const { data, error } = await supabase
       .from('vapi_logs')
       .select('*')
       .order('created_at', { ascending: false });
     
     if (error) {
-      console.error('Error fetching logs:', error);
+      console.error('API: Error fetching logs:', error);
       return res.status(500).json({ error: error.message });
     }
     
+    console.log('API: Successfully fetched logs:', data);
     res.json(data || []);
   });
 
