@@ -1,0 +1,3 @@
+export default function VoiceAgentDashboard() {
+  // ... rest of the component code ...
+}
