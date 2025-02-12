@@ -177,8 +177,11 @@ function VoiceAgentDashboard() {
       const today = new Date().toISOString().split('T')[0];
       const callTime = `${today}T${scheduledTime}:00Z`;
 
+      // Find the agent name from the voiceAgents array
+      const selectedAgent = voiceAgents.find(agent => agent.id === scheduleForm.agent);
+      
       const scheduledCall = {
-        agent_name: scheduleForm.agent,
+        agent_name: selectedAgent?.name || '',
         call_time: callTime,
         topic: scheduleForm.topic || '',
         phone_number: scheduleForm.phoneNumber || ''
