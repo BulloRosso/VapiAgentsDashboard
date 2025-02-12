@@ -20,7 +20,7 @@ export function registerRoutes(app: Express): Server {
   // VAPI webhook endpoint
   app.post("/api/webhook", async (req, res) => {
     console.log(req.body.message);
-    
+
     const result = messageSchema.safeParse(req.body.message);
 
     if (!result.success) {
@@ -56,7 +56,13 @@ export function registerRoutes(app: Express): Server {
             summary: message.summary,
           }, {
             onConflict: 'call_id',
-            target: ['call_id']
+            update: {
+              status: 'ended',
+              duration_seconds: Math.round(message.durationSeconds),
+              costs: message.cost,
+              messages: message.transcript,
+              summary: message.summary
+            }
           })
           .select();
 
