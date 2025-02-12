@@ -167,13 +167,16 @@ function VoiceAgentDashboard() {
   // Modal handling functions
   function handleEditScheduled(agent) {
     const [hours, minutes] = agent.scheduledTime.split(':');
+    // Find the agent ID from voiceAgents array by matching the name
+    const selectedAgent = voiceAgents.find(va => va.name === agent.agent_name);
+    
     setScheduleForm({
-      customerName: agent.customer,
-      phoneNumber: agent.phoneNumber,
+      customerName: agent.customer_name || '',
+      phoneNumber: agent.phone_number,
       topic: agent.topic,
       hour: hours,
       minute: minutes,
-      agent: agent.agent
+      agent: selectedAgent?.id || ''
     });
     setEditingAgent(agent);
     setShowScheduleModal(true);
