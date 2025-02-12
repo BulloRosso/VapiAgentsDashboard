@@ -37,6 +37,8 @@ export function registerRoutes(app: Express): Server {
             call_id: message.call.id,
             status: message.status,
             agent_id: message.call.assistantId,
+          }, {
+            onConflict: 'call_id'
           })
           .select();
 
@@ -44,8 +46,6 @@ export function registerRoutes(app: Express): Server {
         res.json(data[0]);
 
       } else if (message.type === 'end-of-call-report') {
-        const totalCost = message.costs.reduce((sum, item) => sum + item.cost, 0);
-        
         const { data, error } = await supabase
           .from('vapi_logs')
           .upsert({
@@ -53,9 +53,11 @@ export function registerRoutes(app: Express): Server {
             status: 'ended',
             agent_id: message.call.assistantId,
             duration_seconds: Math.round(message.durationSeconds),
-            costs: totalCost,
+            costs: message.cost,
             messages: message.transcript,
             summary: message.summary,
+          }, {
+            onConflict: 'call_id'
           })
           .select();
 
