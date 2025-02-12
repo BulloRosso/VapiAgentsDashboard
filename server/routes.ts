@@ -37,6 +37,7 @@ export function registerRoutes(app: Express): Server {
             call_id: message.call.id,
             status: message.status,
             agent_id: message.call.assistantId,
+            messages: message.artifact?.messages
           }, {
             onConflict: 'call_id'
           })
@@ -52,10 +53,11 @@ export function registerRoutes(app: Express): Server {
             call_id: message.call.id,
             status: 'ended',
             agent_id: message.call.assistantId,
-            duration_seconds: Math.round(message.durationSeconds),
-            costs: message.cost,
-            messages: message.transcript,
-            summary: message.summary,
+            duration_seconds: message.durationSeconds ? Math.round(message.durationSeconds) : null,
+            cost: message.cost,
+            messages: message.artifact?.messages,
+            transcript: message.artifact?.transcript,
+            summary: message.analysis?.summary
           }, {
             onConflict: 'call_id'
           })

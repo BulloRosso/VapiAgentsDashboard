@@ -56,10 +56,13 @@ export type CallReport = typeof callReports.$inferSelect;
 export const vapiLogs = pgTable("vapi_logs", {
   id: serial("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  callId: text("call_id").notNull(),
   status: text("status").default('in-progress'),
   agentId: text("agent_id"),
-  durationSeconds: text("duration_seconds"),
+  durationSeconds: integer("duration_seconds"),
+  cost: numeric("cost"),
   messages: jsonb("messages"),
+  transcript: text("transcript"),
   summary: text("summary")
 });
 
