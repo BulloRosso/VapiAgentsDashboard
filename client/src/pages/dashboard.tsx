@@ -45,7 +45,7 @@ function VoiceAgentDashboard() {
     queryKey: ['logs'],
     queryFn: async () => {
       
-      const response = await fetch('https://149d18b5-fe3f-4ba0-b982-a82b868464c8-00-24mbvbm32azaf.spock.replit.dev/api/logs');
+      const response = await fetch('/api/logs');
       if (!response.ok) {
         throw new Error('Failed to fetch logs');
       }
