@@ -8,6 +8,7 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply antialiased bg-background text-foreground;
+    font-family: 'Montserrat', sans-serif;
   }
 }
