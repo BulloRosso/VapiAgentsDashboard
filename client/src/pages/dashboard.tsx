@@ -166,8 +166,8 @@ function VoiceAgentDashboard() {
     scheduledTime: new Date(call.call_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
     timeInStatus: '00:00'
   }));
-  const activeAgents = agents.filter(a => a.status === 'in_call');
-  const finishedAgents = agents.filter(a => a.status === 'finished');
+  const activeAgents = agents.filter(a => a.status === 'in-progress' || a.status === 'forwarding');
+  const finishedAgents = agents.filter(a => a.status === 'ended' || a.status === 'finished');
 
   // Utility functions from voice-agent-dashboard
   function getStatusColor(status) {
