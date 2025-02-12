@@ -234,7 +234,11 @@ function VoiceAgentDashboard() {
             )}
             {agent.messages && (
               <div className="mt-3 space-y-2">
-                {agent.messages.map((msg, idx) => (
+                {typeof agent.messages === 'string' ? (
+                  <div className="text-sm p-2 rounded bg-blue-50 text-blue-700">
+                    {agent.messages}
+                  </div>
+                ) : Array.isArray(agent.messages) && agent.messages.map((msg, idx) => (
                   <div key={idx} className={`text-sm p-2 rounded ${
                     msg.role === 'assistant' ? 'bg-blue-50 text-blue-700' : 
                     'bg-gray-50 text-gray-700'
