@@ -29,21 +29,14 @@ function VoiceAgentDashboard() {
   const { data: logs = [] } = useQuery<VapiLog[]>({
     queryKey: ['logs'],
     queryFn: async () => {
-      console.log('Starting logs fetch from:', '/api/logs');
-      const { data, error } = await supabase
-        .from('vapi_logs')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching logs:', error);
-        return [];
+      console.log('Starting logs fetch from API...');
+      const response = await fetch('https://149d18b5-fe3f-4ba0-b982-a82b868464c8-00-24mbvbm32azaf.spock.replit.dev/api/logs');
+      if (!response.ok) {
+        throw new Error('Failed to fetch logs');
       }
-
-      console.log('Raw logs from Supabase:', data);
-      const transformedLogs = data || [];
-      console.log('Transformed logs:', transformedLogs);
-      return transformedLogs;
+      const data = await response.json();
+      console.log('Raw logs from API:', data);
+      return data || [];
     }
   });
 
