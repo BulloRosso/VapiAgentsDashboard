@@ -69,7 +69,7 @@ function VoiceAgentDashboard() {
   }, []);
 
   // State management from voice-agent-dashboard
-  const [humanHandovers] = useState(3);
+  const [humanHandovers] = useState(0);
   const [showDetails, setShowDetails] = useState(true);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [editingAgent, setEditingAgent] = useState(null);
@@ -146,38 +146,12 @@ function VoiceAgentDashboard() {
   }
 
   function handleScheduleSubmit() {
-    //This function is not used and will cause error, removing it.
-    // if (editingAgent) {
-    //   setAgents(agents.map(a => 
-    //     a.id === editingAgent.id 
-    //       ? {
-    //           ...editingAgent,
-    //           customer: scheduleForm.customerName,
-    //           phoneNumber: scheduleForm.phoneNumber,
-    //           topic: scheduleForm.topic,
-    //           scheduledTime: `${scheduleForm.hour}:${scheduleForm.minute}`,
-    //           agent: scheduleForm.agent
-    //         }
-    //       : a
-    //   ));
-    // } else {
-    //   // Add new scheduled call
-    //   setAgents([...agents, {
-    //     id: Date.now(),
-    //     status: 'scheduled',
-    //     customer: scheduleForm.customerName,
-    //     phoneNumber: scheduleForm.phoneNumber,
-    //     topic: scheduleForm.topic,
-    //     scheduledTime: `${scheduleForm.hour}:${scheduleForm.minute}`,
-    //     agent: scheduleForm.agent,
-    //     timeInStatus: '00:00'
-    //   }]);
-    // }
+  
     handleCloseModal();
   }
 
   function handleDeleteScheduled(agent) {
-    //This function is not used and will cause error, removing it.
+    
   }
 
   // Component definitions
