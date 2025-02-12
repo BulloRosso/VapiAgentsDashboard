@@ -57,8 +57,20 @@ export function registerRoutes(app: Express): Server {
       console.error('API: Error fetching logs:', error);
       return res.status(500).json({ error: error.message });
     }
+
+    const statusMap = {
+      'in-progress': 'in_call',
+      'queued': 'scheduled',
+      'forwarding': 'in_call',
+      'ended': 'finished'
+    };
+
+    const mappedData = (data || []).map(log => ({
+      ...log,
+      status: statusMap[log.status] || log.status
+    }));
     
-    res.json(data || []);
+    res.json(mappedData);
   });
 
   // VAPI webhook endpoint
