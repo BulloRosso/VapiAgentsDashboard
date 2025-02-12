@@ -12,6 +12,23 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Get all agents
+  // Get total costs for today
+  app.get("/api/costs-today", async (_req, res) => {
+    const today = new Date().toISOString().split('T')[0];
+    const { data, error } = await supabase
+      .from('vapi_logs')
+      .select('costs')
+      .gte('created_at', today)
+      .lt('created_at', new Date(new Date().setDate(new Date().getDate() + 1)).toISOString());
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    const totalCosts = data.reduce((sum, log) => sum + (log.costs || 0), 0);
+    res.json({ total: totalCosts });
+  });
+
   app.get("/api/agents", async (_req, res) => {
     console.log('API: Fetching agents from Supabase...');
     const { data, error } = await supabase

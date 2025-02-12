@@ -23,6 +23,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import AgentTeam from './agent-team';
+import Settings from './settings';
 
 function VoiceAgentDashboard() {
   // Fetch scheduled calls
@@ -49,6 +52,18 @@ function VoiceAgentDashboard() {
       const data = await response.json();
       console.log('Raw logs from API:', data);
       return data || [];
+    }
+  });
+
+  // Fetch costs today
+  const { data: costsToday = 0, isError: isCostsError, error: costsError } = useQuery({
+    queryKey: ['costs-today'],
+    queryFn: async () => {
+      const response = await fetch('/api/costs-today');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch costs: ${response.status}`);
+      }
+      return await response.json();
     }
   });
 
@@ -169,7 +184,7 @@ function VoiceAgentDashboard() {
     const [hours, minutes] = agent.scheduledTime.split(':');
     // Find the agent ID from voiceAgents array by matching the name
     const selectedAgent = voiceAgents.find(va => va.name === agent.name);
-    
+
     setScheduleForm({
       customerName: agent.customer || '',
       phoneNumber: agent.phoneNumber,
@@ -391,32 +406,49 @@ function VoiceAgentDashboard() {
                 {humanHandovers}
               </div>
             </div>
+            <span className="text-gray-800 font-medium text-right">Costs today: {costsToday.toFixed(2)}€</span>
           </div>
         </div>
-      </div>
+        <Tabs defaultValue="schedule" className="mb-4">
+          <TabsList>
+            <TabsTrigger value="schedule">Schedule</TabsTrigger>
+            <TabsTrigger value="team">Agent Team</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+          <TabsContent value="schedule" className="m-0">
+            <div className="flex">
+              <Column 
+                title="Scheduled Calls" 
+                agents={scheduledAgents} 
+                bgColor="#EFF6FF"
+                headerBubbleColor="bg-indigo-500"
+                onAddSchedule={() => setShowScheduleModal(true)}
+                onDeleteAgent={handleDeleteScheduled}
+                onEditAgent={handleEditScheduled}
+              />
+              <Column 
+                title="Active Calls" 
+                agents={activeAgents} 
+                bgColor="#F0FDF4"
+                headerBubbleColor="bg-green-500"
+              />
+              <Column 
+                title="Finished Today" 
+                agents={finishedAgents} 
+                bgColor="#f3f4f6"
+                headerBubbleColor="bg-gray-500"
+              />
+            </div>
+          </TabsContent>
 
-      <div className="flex">
-        <Column 
-          title="Scheduled Calls" 
-          agents={scheduledAgents} 
-          bgColor="#EFF6FF"
-          headerBubbleColor="bg-indigo-500"
-          onAddSchedule={() => setShowScheduleModal(true)}
-          onDeleteAgent={handleDeleteScheduled}
-          onEditAgent={handleEditScheduled}
-        />
-        <Column 
-          title="Active Calls" 
-          agents={activeAgents} 
-          bgColor="#F0FDF4"
-          headerBubbleColor="bg-green-500"
-        />
-        <Column 
-          title="Finished Today" 
-          agents={finishedAgents} 
-          bgColor="#f3f4f6"
-          headerBubbleColor="bg-gray-500"
-        />
+          <TabsContent value="team" className="m-0">
+            <AgentTeam />
+          </TabsContent>
+
+          <TabsContent value="settings" className="m-0">
+            <Settings />
+          </TabsContent>
+        </Tabs>
       </div>
 
       <Dialog 
