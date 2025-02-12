@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Phone, Calendar, Clock, User, CheckCircle2, FileText, Plus, UserPlus, MessageSquare, X } from 'lucide-react';
-import { subscribeToCallUpdates } from '@/lib/supabase';
+import { initSupabaseAuth, subscribeToCallUpdates } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import type { VapiLog } from '@shared/schema';
 import {
@@ -100,29 +100,29 @@ function VoiceAgentDashboard() {
  
   useEffect(() => {
     // Initialize auth first
-    initSupabaseAuth();
-    
-    console.log('Setting up Supabase realtime subscription...');
-    const subscription = supabase
-      .channel('vapi_logs_changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'vapi_logs' },
-        (payload) => {
-          console.log('Received event type:', payload.eventType);
-          console.log('Full payload:', payload);
-          queryClient.invalidateQueries({ queryKey: ['logs'] });
-          queryClient.invalidateQueries({ queryKey: ['costs-today'] });
-        }
-      )
-      .subscribe((status) => {
-        console.log('Supabase subscription status:', status);
-      });
+    initSupabaseAuth().then(() => {
+      console.log('Setting up Supabase realtime subscription...');
+      const subscription = supabase
+        .channel('vapi_logs_changes')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'vapi_logs' },
+          (payload) => {
+            console.log('Received event type:', payload.eventType);
+            console.log('Full payload:', payload);
+            queryClient.invalidateQueries({ queryKey: ['logs'] });
+            queryClient.invalidateQueries({ queryKey: ['costs-today'] });
+          }
+        )
+        .subscribe((status) => {
+          console.log('Supabase subscription status:', status);
+        });
 
-    return () => {
-      console.log('Cleaning up Supabase subscription...');
-      subscription.unsubscribe();
-    };
+      return () => {
+        console.log('Cleaning up Supabase subscription...');
+        subscription.unsubscribe();
+      };
+    });
   }, []);
 
   // State management from voice-agent-dashboard

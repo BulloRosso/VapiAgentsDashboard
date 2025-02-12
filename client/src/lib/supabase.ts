@@ -31,7 +31,10 @@ export const initSupabaseAuth = async () => {
   }
 
   if (data?.session) {
+    console.log('Auth success:', data.session);
     supabase.realtime.setAuth(data.session.access_token);
+  } else {
+    console.log("NO JWT for Supabase")
   }
 };
 
