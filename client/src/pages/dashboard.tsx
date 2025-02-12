@@ -71,11 +71,11 @@ function VoiceAgentDashboard() {
   const transformLogsToAgents = (logs: VapiLog[]) => {
     return logs.map(log => ({
       id: log.id,
-      name: log.agentId || 'Unknown Agent',
+      name: log.agent_id || 'Unknown Agent',
       status: log.status === 'in-progress' ? 'in_call' : 'finished',
       customer: 'Customer',
-      timeInStatus: `${Math.floor(log.durationSeconds / 60)}:${(log.durationSeconds % 60).toString().padStart(2, '0')}`,
-      duration: log.durationSeconds / 60,
+      timeInStatus: `${Math.floor(log.duration_seconds / 60)}:${(log.duration_seconds % 60).toString().padStart(2, '0')}`,
+      duration: log.duration_seconds / 60,
       summary: log.summary,
       messages: log.messages
     }));
