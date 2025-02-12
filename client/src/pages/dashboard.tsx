@@ -117,7 +117,6 @@ function VoiceAgentDashboard() {
         queryClient.invalidateQueries({ queryKey: ['logs'] });
         queryClient.invalidateQueries({ queryKey: ['costs-today'] });
       })
-      )
       .subscribe((status) => {
         console.log('Supabase subscription status:', status);
       });
