@@ -47,6 +47,20 @@ function VoiceAgentDashboard() {
     }
   });
 
+  // Transform logs into the format expected by the UI
+  const transformLogsToAgents = (logs: VapiLog[]) => {
+    return logs.map(log => ({
+      id: log.id,
+      name: log.agent_id || 'Unknown Agent',
+      status: log.status === 'in_progress' ? 'in_call' : 'finished',
+      customer: 'Customer',
+      timeInStatus: `${Math.floor(log.duration_seconds / 60)}:${(log.duration_seconds % 60).toString().padStart(2, '0')}`,
+      duration: log.duration_seconds / 60,
+      summary: log.summary,
+      messages: log.messages
+    }));
+  };
+
   // Log the state of logs after query
   console.log('Current logs state:', logs);
 
@@ -77,21 +91,7 @@ function VoiceAgentDashboard() {
 
   const voiceAgents = ["Leo", "Louis", "Lars", "Lara"];
 
-  // Transform logs into the format expected by the UI
-  const transformLogsToAgents = (logs: VapiLog[]) => {
-    return logs.map(log => ({
-      id: log.id,
-      name: log.agent_id || 'Unknown Agent',
-      status: log.status === 'in_progress' ? 'in_call' : 'finished',
-      customer: 'Customer',
-      timeInStatus: `${Math.floor(log.duration_seconds / 60)}:${(log.duration_seconds % 60).toString().padStart(2, '0')}`,
-      duration: log.duration_seconds / 60,
-      summary: log.summary,
-      messages: log.messages
-    }));
-  };
-
-  const agents = transformLogsToAgents(logs);
+ 
 
   const scheduledAgents = agents.filter(a => a.status === 'scheduled');
   const activeAgents = agents.filter(a => a.status === 'in_call');
