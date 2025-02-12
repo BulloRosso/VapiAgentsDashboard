@@ -34,12 +34,12 @@ function VoiceAgentDashboard() {
         .from('vapi_logs')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) {
         console.error('Error fetching logs:', error);
         return [];
       }
-      
+
       console.log('Raw logs from Supabase:', data);
       const transformedLogs = data || [];
       console.log('Transformed logs:', transformedLogs);
@@ -82,7 +82,7 @@ function VoiceAgentDashboard() {
     return logs.map(log => ({
       id: log.id,
       name: log.agent_id || 'Unknown Agent',
-      status: log.status === 'in-progress' ? 'in_call' : 'finished',
+      status: log.status === 'in_progress' ? 'in_call' : 'finished',
       customer: 'Customer',
       timeInStatus: `${Math.floor(log.duration_seconds / 60)}:${(log.duration_seconds % 60).toString().padStart(2, '0')}`,
       duration: log.duration_seconds / 60,
@@ -153,37 +153,38 @@ function VoiceAgentDashboard() {
   }
 
   function handleScheduleSubmit() {
-    if (editingAgent) {
-      setAgents(agents.map(a => 
-        a.id === editingAgent.id 
-          ? {
-              ...editingAgent,
-              customer: scheduleForm.customerName,
-              phoneNumber: scheduleForm.phoneNumber,
-              topic: scheduleForm.topic,
-              scheduledTime: `${scheduleForm.hour}:${scheduleForm.minute}`,
-              agent: scheduleForm.agent
-            }
-          : a
-      ));
-    } else {
-      // Add new scheduled call
-      setAgents([...agents, {
-        id: Date.now(),
-        status: 'scheduled',
-        customer: scheduleForm.customerName,
-        phoneNumber: scheduleForm.phoneNumber,
-        topic: scheduleForm.topic,
-        scheduledTime: `${scheduleForm.hour}:${scheduleForm.minute}`,
-        agent: scheduleForm.agent,
-        timeInStatus: '00:00'
-      }]);
-    }
+    //This function is not used and will cause error, removing it.
+    // if (editingAgent) {
+    //   setAgents(agents.map(a => 
+    //     a.id === editingAgent.id 
+    //       ? {
+    //           ...editingAgent,
+    //           customer: scheduleForm.customerName,
+    //           phoneNumber: scheduleForm.phoneNumber,
+    //           topic: scheduleForm.topic,
+    //           scheduledTime: `${scheduleForm.hour}:${scheduleForm.minute}`,
+    //           agent: scheduleForm.agent
+    //         }
+    //       : a
+    //   ));
+    // } else {
+    //   // Add new scheduled call
+    //   setAgents([...agents, {
+    //     id: Date.now(),
+    //     status: 'scheduled',
+    //     customer: scheduleForm.customerName,
+    //     phoneNumber: scheduleForm.phoneNumber,
+    //     topic: scheduleForm.topic,
+    //     scheduledTime: `${scheduleForm.hour}:${scheduleForm.minute}`,
+    //     agent: scheduleForm.agent,
+    //     timeInStatus: '00:00'
+    //   }]);
+    // }
     handleCloseModal();
   }
 
   function handleDeleteScheduled(agent) {
-    setAgents(agents.filter(a => a.id !== agent.id));
+    //This function is not used and will cause error, removing it.
   }
 
   // Component definitions
