@@ -54,7 +54,7 @@ export function registerRoutes(app: Express): Server {
             agent_id: message.call.assistantId,
             duration_seconds: Math.round(message.durationSeconds),
             costs: totalCost,
-            messages: message.messages,
+            messages: message.transcript,
             summary: message.summary,
           })
           .select();
