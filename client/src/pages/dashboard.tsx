@@ -175,7 +175,11 @@ function VoiceAgentDashboard() {
     try {
       const scheduledTime = `${scheduleForm.hour.padStart(2, '0')}:${scheduleForm.minute.padStart(2, '0')}`;
       const today = new Date().toISOString().split('T')[0];
-      const callTime = `${today}T${scheduledTime}:00Z`;
+      
+      // Create date in local timezone
+      const localDate = new Date(`${today}T${scheduledTime}:00`);
+      // Convert to UTC ISO string
+      const callTime = localDate.toISOString();
 
       // Find the agent name from the voiceAgents array
       const selectedAgent = voiceAgents.find(agent => agent.id === scheduleForm.agent);
