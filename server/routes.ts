@@ -27,7 +27,7 @@ export function registerRoutes(app: Express): Server {
       return res.status(400).json({ error: result.error });
     }
 
-    const message = result.data;
+    const { message } = result.data;
 
     try {
       if (message.type === 'status-update') {

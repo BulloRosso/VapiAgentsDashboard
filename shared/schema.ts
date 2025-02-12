@@ -86,29 +86,34 @@ export type VapiLog = typeof vapiLogs.$inferSelect;
 import { z } from 'zod';
 
 export const messageSchema = z.object({
-  timestamp: z.number(),
-  type: z.enum(['status-update', 'end-of-call-report']),
-  status: z.enum(['in-progress', 'queued', 'forwarding', 'ended']).optional(),
-  endedReason: z.string().optional(),
-  call: z.object({
-    id: z.string(),
-    assistantId: z.string(),
-    orgId: z.string(),
-    type: z.string(),
-    status: z.string(),
-  }).passthrough(),
-  assistant: z.object({
-    id: z.string(),
-    name: z.string(),
-  }).passthrough(),
-  artifact: z.object({
-    messages: z.array(z.any()).optional(),
-    messagesOpenAIFormatted: z.array(z.any()).optional()
-  }).optional(),
-  cost: z.number().optional(),
-  durationSeconds: z.number().optional(),
-  summary: z.string().optional(),
-  transcript: z.string().optional()
+  message: z.object({
+    timestamp: z.number(),
+    type: z.enum(['status-update', 'end-of-call-report']),
+    status: z.enum(['in-progress', 'queued', 'forwarding', 'ended']).optional(),
+    endedReason: z.string().optional(),
+    call: z.object({
+      id: z.string(),
+      assistantId: z.string(),
+      orgId: z.string(),
+      type: z.string(),
+      status: z.string(),
+    }).passthrough(),
+    assistant: z.object({
+      name: z.string(),
+      transcriber: z.any(),
+      model: z.any(),
+      voice: z.any(),
+    }).passthrough(),
+    artifact: z.object({
+      messages: z.array(z.any()),
+      messagesOpenAIFormatted: z.array(z.any())
+    }).optional(),
+    analysis: z.record(z.any()).optional(),
+    cost: z.number().optional(),
+    durationSeconds: z.number().optional(),
+    costBreakdown: z.any().optional(),
+    transcript: z.string().optional()
+  })
 });
 
 export type VapiMessage = z.infer<typeof messageSchema>;
