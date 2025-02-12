@@ -44,13 +44,13 @@ function VoiceAgentDashboard() {
   const { data: logs = [] } = useQuery<VapiLog[]>({
     queryKey: ['logs'],
     queryFn: async () => {
-      console.log('Starting logs fetch from API...');
+      
       const response = await fetch('https://149d18b5-fe3f-4ba0-b982-a82b868464c8-00-24mbvbm32azaf.spock.replit.dev/api/logs');
       if (!response.ok) {
         throw new Error('Failed to fetch logs');
       }
       const data = await response.json();
-      console.log('Raw logs from API:', data);
+     
       return data || [];
     }
   });
@@ -94,13 +94,10 @@ function VoiceAgentDashboard() {
     }));
   };
 
-  // Log the state of logs after query
-  console.log('Current logs state:', logs);
-
+ 
   // Log the transformed agents
   const agents = transformLogsToAgents(logs);
-  console.log('Transformed agents:', agents);
-
+ 
   useEffect(() => {
     console.log('Setting up Supabase realtime subscription...');
     const subscription = supabase
