@@ -128,7 +128,7 @@ function VoiceAgentDashboard() {
     id: call.id,
     name: call.agent_name,
     status: 'scheduled',
-    customer: 'Scheduled Call',
+    customer: call.customer_name,
     phoneNumber: call.phone_number,
     topic: call.topic,
     scheduledTime: new Date(call.call_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
@@ -300,8 +300,10 @@ function VoiceAgentDashboard() {
                 />
               )}
               <div>
-                <p className="font-semibold text-gray-800">{agent.name}</p>
-                {/* Removed Customer: {agent.customer} */}
+                <p className="font-semibold text-gray-800">{agent.name}
+                -&gt; {agent.customer}
+                </p>
+                
               </div>
             </div>
             {agent.summary && (
