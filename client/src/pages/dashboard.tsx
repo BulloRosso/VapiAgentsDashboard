@@ -29,6 +29,7 @@ function VoiceAgentDashboard() {
   const { data: logs = [] } = useQuery<VapiLog[]>({
     queryKey: ['logs'],
     queryFn: async () => {
+      console.log('Starting logs fetch...');
       const { data, error } = await supabase
         .from('vapi_logs')
         .select('*')
@@ -39,10 +40,19 @@ function VoiceAgentDashboard() {
         return [];
       }
       
-      console.log('Fetched logs:', data);
-      return data || [];
+      console.log('Raw logs from Supabase:', data);
+      const transformedLogs = data || [];
+      console.log('Transformed logs:', transformedLogs);
+      return transformedLogs;
     }
   });
+
+  // Log the state of logs after query
+  console.log('Current logs state:', logs);
+
+  // Log the transformed agents
+  const agents = transformLogsToAgents(logs);
+  console.log('Transformed agents:', agents);
 
   useEffect(() => {
     const unsubscribe = subscribeToCallUpdates(() => {
