@@ -60,7 +60,7 @@ export const vapiLogs = pgTable("vapi_logs", {
   status: text("status").default('in-progress'),
   agentId: text("agent_id"),
   durationSeconds: integer("duration_seconds"),
-  cost: numeric("cost"),
+  cost: numeric("costs"),
   messages: jsonb("messages"),
   transcript: text("transcript"),
   summary: text("summary")

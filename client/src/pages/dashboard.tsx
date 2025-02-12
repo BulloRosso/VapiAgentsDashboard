@@ -28,16 +28,10 @@ function VoiceAgentDashboard() {
   const { data: logs = [] } = useQuery<VapiLog[]>({
     queryKey: ['/api/logs'],
     queryFn: async () => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
       const response = await fetch('/api/logs');
       const allLogs = await response.json();
-      
-      return allLogs.filter((log: VapiLog) => {
-        const logDate = new Date(log.created_at || '');
-        return logDate >= today;
-      });
+      console.log('Fetched logs:', allLogs);
+      return allLogs;
     }
   });
 
