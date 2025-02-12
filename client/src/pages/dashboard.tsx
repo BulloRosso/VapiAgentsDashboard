@@ -56,7 +56,7 @@ function VoiceAgentDashboard() {
   });
 
   // Fetch costs today
-  const { data: costsToday = 0, isError: isCostsError, error: costsError } = useQuery({
+  const { data: costsData = { total: 0 }, isError: isCostsError, error: costsError } = useQuery({
     queryKey: ['costs-today'],
     queryFn: async () => {
       const response = await fetch('/api/costs-today');
@@ -406,7 +406,7 @@ function VoiceAgentDashboard() {
                 {humanHandovers}
               </div>
             </div>
-            <span className="text-gray-800 font-medium text-right">Costs today: {costsToday.toFixed(2)}€</span>
+            <span className="text-gray-800 font-medium text-right">Costs today: {costsData.total.toFixed(2)}€</span>
           </div>
         </div>
         <Tabs defaultValue="schedule" className="mb-4">
