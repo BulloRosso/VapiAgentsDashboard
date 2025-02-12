@@ -1,0 +1,185 @@
+After countless hours without finding a solution, I finally got Firebase Auth working with RLS for both “get” and “realtime” queries in a Next.js project, so I am sharing this shortcut with you.
+
+First of all, you need to set up your database correctly. If you are using Prisma, this should go in a migration.sql file after running:
+
+prisma migrate dev --create-only
+Here we consider a table simulation for the demo:
+
+-- Fix prisma migrate screwing privileges as per https://supabase.com/docs/guides/integrations/prisma#missing-grants
+grant usage on schema public to postgres, anon, authenticated, service_role;
+
+grant all privileges on all tables in schema public to postgres, anon, authenticated, service_role;
+grant all privileges on all functions in schema public to postgres, anon, authenticated, service_role;
+grant all privileges on all sequences in schema public to postgres, anon, authenticated, service_role;
+
+alter default privileges in schema public grant all on tables to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on functions to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on sequences to postgres, anon, authenticated, service_role;
+
+-- This function will be used to check RLS policy for users row access
+-- We simply retrieve the id out of the firebase auth user
+create or replace function auth_user_id()
+    returns text
+    language sql
+as
+$$
+select nullif(current_setting('request.jwt.claims', true)::json ->> 'id', '')::text;
+$$;
+
+-- This function will be used to check RLS policy for super admin access
+-- We simply retrieve the email out of the firebase auth user
+create or replace function auth_user_email()
+    returns text
+    language sql
+as
+$$
+select nullif(current_setting('request.jwt.claims', true)::json ->> 'email', '')::text;
+$$;
+
+-- This is the policy, we allow to access the rows if the firebase auth user id is 
+-- equal to a column name "userId" in your table (assumed) or if the firebase auth
+-- user id email ends with "@your_company.com"
+CREATE POLICY "Enable insert for users based on email" ON simulation
+    FOR ALL
+    TO authenticated
+    USING (
+    ((auth_user_id() = "userId") OR (auth_user_email() ~~ '%@your_company.com'::text))
+    );
+
+-- We enable realtime for table simulation
+alter publication supabase_realtime add table simulation;
+
+-- We enable RLS for table simulation
+alter table simulation
+    enable row level security;
+Here comes the tricky part. My project is using next-firebase-auth library for handling the login, and it has an endpoint defined this way:
+
+import jwt from 'jsonwebtoken'
+import {NextApiRequest, NextApiResponse} from 'next'
+import {getUserFromCookies, setAuthCookies} from 'next-firebase-auth'
+import initAuth from 'utils/initAuth'
+import {setCookie} from 'cookies-next'
+import {SUPABASE_ACCESS_TOKEN} from 'utils/consts'
+
+initAuth()
+
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const exp = 60 * 60 * 24 + new Date().getTime()
+  try {
+    const user = await getUserFromCookies({req})
+    const accessToken = jwt.sign(
+      {
+        role: 'authenticated', // VERY IMPORTANT!
+        aud: 'authenticated', // VERY IMPORTANT!
+        sub: user.id, // VERY IMPORTANT!
+        id: user.id,
+        email: user.email,
+        exp, // VERY IMPORTANT!
+      },
+      process.env.JWT_SECRET
+    )
+    setCookie(SUPABASE_ACCESS_TOKEN, accessToken, {req, res, maxAge: exp})
+    await setAuthCookies(req, res)
+  } catch (e) {
+    console.error(e)
+    return res.status(500).json({error: 'Unexpected error.'})
+  }
+  return res.status(200).json({status: true})
+}
+
+export default handler
+What this code does is decrypt the firebase auth user payload out of the cookies thanks to auth lib (but you can achieve the same by decoding the JWT token coming from user.getIdToken())
+
+And then you need to sign your new payload with the Supabase JWT token (found in the settings). But what is mentioned nowhere is that if you fail to add to the encoded payload the parameters marked as very important, the real-time will simply fail and catch only “DELETE” events, and nothing for “INSERT” and “UPDATE”.
+
+The other problem worth mentioning is that you cannot use jwt.sign() outside of a Node.js context, and anyway, your JWT_SECRETshould never be public.
+
+But this means that you need to pass your Supabase encoded token through the cookies to your front end, and where it is kind of annoying is that your Supabase client needs to be initialized with this token, which comes later in the flow. So you have to do a helper:
+
+import {createClient} from '@supabase/supabase-js'
+import {CookieValueTypes} from 'cookies-next'
+import {Database} from '../supabaseTypes'
+
+export const supabaseAuthed = (accessToken: CookieValueTypes) => {
+  const access_token = accessToken as string
+  const supabaseClient = createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      global: {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+      // This was in the documentation but doesn't work at all
+      // See: https://supabase.com/docs/guides/realtime/extensions/postgres-changes#custom-tokens
+      // realtime: {
+      //   headers: {
+      //     apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      //   },
+      //   params: {
+      //     apikey: accessToken,
+      //   },
+      // },
+    }
+  )
+  supabaseClient.realtime.accessToken = access_token // VERY IMPORTANT!
+  return supabaseClient
+}
+At some point, I also thought I found the solution thanks to that commit, but t was reverted: https://github.com/supabase/supabase-js/commit/b55d386b35cdf9373fabbbc07199f86811bde339
+
+Then FINALLY, you can define your hook this way:
+
+const useSimulations = (userId: string) => {
+  const [simulations, setSimulations] = useState<Simulation[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+  const supabaseAccessToken = getCookie(SUPABASE_ACCESS_TOKEN)
+
+  const updateSimulations = async () => {
+    const supabase = supabaseAuthed(supabaseAccessToken)
+    const {data, error} = await supabase
+      .from("simulation")
+      .select()
+      .order('createdAt', {ascending: false})
+      .eq('userId', userId)
+    setLoading(false)
+    if (error) {
+      return handleError(error)
+    }
+    setSimulations(data.map(d => Simulation.parse(d)))
+  }
+
+  useAsyncEffect(async () => {
+    if (!supabaseAccessToken || loading || !isEmpty(simulations)) return
+    setLoading(true)
+    await updateSimulations()
+  }, [])
+
+  useEffect(() => {
+    const supabase = supabaseAuthed(supabaseAccessToken)
+    supabase
+      .channel('any')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: "simulation",
+          filter: `userId=eq.${userId}`,
+        },
+        payload => {
+          // This finally reacts to every table events!
+          console.log('Change received!', payload)
+          return updateSimulations()
+        }
+      )
+      .subscribe()
+  }, [])
+
+  return {simulations, loading}
+}
+
+export default useSimulations
+And VOILA!
+
+Sorry if I went fast and missed a few details, but other online resources can help in addition to my post, which mainly focused on this nightmare's core solution.
