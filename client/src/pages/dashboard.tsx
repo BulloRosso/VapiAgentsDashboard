@@ -26,12 +26,20 @@ import {
 function VoiceAgentDashboard() {
   // Data fetching from dashboard(1)
   const { data: logs = [] } = useQuery<VapiLog[]>({
-    queryKey: ['/api/logs'],
+    queryKey: ['logs'],
     queryFn: async () => {
-      const response = await fetch('/api/logs');
-      const allLogs = await response.json();
-      console.log('Fetched logs:', allLogs);
-      return allLogs;
+      const { data, error } = await supabase
+        .from('vapi_logs')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching logs:', error);
+        return [];
+      }
+      
+      console.log('Fetched logs:', data);
+      return data || [];
     }
   });
 
