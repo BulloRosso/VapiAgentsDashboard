@@ -275,7 +275,7 @@ function VoiceAgentDashboard() {
             {getStatusIcon(agent.status)}
             <span className="text-white font-semibold">
               {agent.status === 'in_call' ? 'In Call' :
-               agent.status === 'scheduled' ? 'Scheduled' :
+               agent.status === 'scheduled' ? '' :
                agent.status === 'waiting_callback' ? 'Waiting Callback' :
                'Finished'}
             </span>
@@ -320,9 +320,9 @@ function VoiceAgentDashboard() {
               )}
               <div>
                 <p className="font-semibold text-gray-800">{agent.name}
-                -&gt; {agent.customer}
+                  <span style={{ marginLeft: '8px' }}>{String.fromCharCode(8594)}</span> {agent.customer}
                 </p>
-
+                <p>{agent.topic}</p>
               </div>
             </div>
             {agent.summary && (
@@ -390,7 +390,7 @@ function VoiceAgentDashboard() {
       <div className="p-6 bg-white">
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center space-x-4">
-            <h1 className="text-3xl font-bold text-gray-800">Voice Agent Activity Hub</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Agent Team Today</h1>
             <button
               onClick={() => setShowDetails(!showDetails)}
               className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-700 font-medium transition-colors"
