@@ -80,20 +80,27 @@ export type InsertVapiLog = z.infer<typeof insertVapiLogSchema>;
 export type VapiLog = typeof vapiLogs.$inferSelect;
 
 // Message type for the VAPI webhooks
+import { z } from 'zod';
+
 export const messageSchema = z.object({
+  timestamp: z.number(),
   type: z.enum(['status-update', 'end-of-call-report']),
+  status: z.enum(['in-progress', 'queued', 'forwarding', 'ended']).optional(),
+  endedReason: z.string().optional(),
   call: z.object({
     id: z.string(),
     assistantId: z.string(),
+    orgId: z.string(),
+    type: z.string(),
+    status: z.string(),
   }).passthrough(),
-  status: z.enum(['in-progress', 'queued', 'forwarding', 'ended']).optional(),
+  assistant: z.object({
+    id: z.string(),
+    name: z.string(),
+  }).passthrough(),
   artifact: z.object({
-    messages: z.array(z.object({
-      role: z.string(),
-      message: z.string(),
-      time: z.number(),
-      secondsFromStart: z.number()
-    })).optional()
+    messages: z.array(z.any()).optional(),
+    messagesOpenAIFormatted: z.array(z.any()).optional()
   }).optional(),
   cost: z.number().optional(),
   durationSeconds: z.number().optional(),
