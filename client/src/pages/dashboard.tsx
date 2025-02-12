@@ -102,21 +102,16 @@ function VoiceAgentDashboard() {
     console.log('Setting up Supabase realtime subscription...');
     const subscription = supabase
       .channel('vapi_logs_changes')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'vapi_logs' }, (payload) => {
-        console.log('INSERT event received:', payload);
-        queryClient.invalidateQueries({ queryKey: ['logs'] });
-        queryClient.invalidateQueries({ queryKey: ['costs-today'] });
-      })
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'vapi_logs' }, (payload) => {
-        console.log('DELETE event received:', payload);
-        queryClient.invalidateQueries({ queryKey: ['logs'] });
-        queryClient.invalidateQueries({ queryKey: ['costs-today'] });
-      })
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'vapi_logs' }, (payload) => {
-        console.log('UPDATE event received:', payload);
-        queryClient.invalidateQueries({ queryKey: ['logs'] });
-        queryClient.invalidateQueries({ queryKey: ['costs-today'] });
-      })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'vapi_logs' },
+        (payload) => {
+          console.log('Received event type:', payload.eventType);
+          console.log('Full payload:', payload);
+          queryClient.invalidateQueries({ queryKey: ['logs'] });
+          queryClient.invalidateQueries({ queryKey: ['costs-today'] });
+        }
+      )
       .subscribe((status) => {
         console.log('Supabase subscription status:', status);
       });
