@@ -117,13 +117,6 @@ function VoiceAgentDashboard() {
         queryClient.invalidateQueries({ queryKey: ['logs'] });
         queryClient.invalidateQueries({ queryKey: ['costs-today'] });
       })
-        (payload) => {
-          console.log('Received Supabase event type:', payload.eventType);
-          console.log('Received Supabase event payload:', payload);
-          console.log('Invalidating queries...');
-          queryClient.invalidateQueries({ queryKey: ['logs'] });
-          queryClient.invalidateQueries({ queryKey: ['costs-today'] });
-        }
       )
       .subscribe((status) => {
         console.log('Supabase subscription status:', status);
