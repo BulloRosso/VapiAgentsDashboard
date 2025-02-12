@@ -102,6 +102,7 @@ function VoiceAgentDashboard() {
   console.log('Transformed agents:', agents);
 
   useEffect(() => {
+    console.log('Setting up Supabase realtime subscription...');
     const subscription = supabase
       .channel('vapi_logs_changes')
       .on(
@@ -111,14 +112,19 @@ function VoiceAgentDashboard() {
           schema: 'public',
           table: 'vapi_logs'
         },
-        () => {
+        (payload) => {
+          console.log('Received Supabase event:', payload);
+          console.log('Invalidating queries...');
           queryClient.invalidateQueries({ queryKey: ['logs'] });
           queryClient.invalidateQueries({ queryKey: ['costs-today'] });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Supabase subscription status:', status);
+      });
 
     return () => {
+      console.log('Cleaning up Supabase subscription...');
       subscription.unsubscribe();
     };
   }, []);
