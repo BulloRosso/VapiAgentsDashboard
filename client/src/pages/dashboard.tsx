@@ -25,6 +25,18 @@ import {
 } from "@/components/ui/select";
 
 function VoiceAgentDashboard() {
+  // Fetch scheduled calls
+  const { data: scheduledCalls = [] } = useQuery({
+    queryKey: ['scheduled-calls'],
+    queryFn: async () => {
+      const response = await fetch('/api/scheduled-calls-today');
+      if (!response.ok) {
+        throw new Error('Failed to fetch scheduled calls');
+      }
+      return await response.json();
+    }
+  });
+
   // Data fetching from dashboard(1)
   const { data: logs = [] } = useQuery<VapiLog[]>({
     queryKey: ['logs'],
@@ -112,7 +124,16 @@ function VoiceAgentDashboard() {
 
 
 
-  const scheduledAgents = agents.filter(a => a.status === 'scheduled');
+  const scheduledAgents = scheduledCalls.map(call => ({
+    id: call.id,
+    name: call.agent_name,
+    status: 'scheduled',
+    customer: 'Scheduled Call',
+    phoneNumber: call.phone_number,
+    topic: call.topic,
+    scheduledTime: new Date(call.call_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+    timeInStatus: '00:00'
+  }));
   const activeAgents = agents.filter(a => a.status === 'in_call');
   const finishedAgents = agents.filter(a => a.status === 'finished');
 
