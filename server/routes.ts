@@ -33,12 +33,10 @@ export function registerRoutes(app: Express): Server {
       if (message.type === 'status-update') {
         const { data, error } = await supabase
           .from('vapi_logs')
-          .upsert({
+          .insert({
             call_id: message.call.id,
             status: message.status,
             agent_id: message.call.assistantId,
-          }, {
-            onConflict: 'call_id'
           })
           .select();
 
@@ -57,7 +55,8 @@ export function registerRoutes(app: Express): Server {
             messages: message.transcript,
             summary: message.summary,
           }, {
-            onConflict: 'call_id'
+            onConflict: 'call_id',
+            target: ['call_id']
           })
           .select();
 
