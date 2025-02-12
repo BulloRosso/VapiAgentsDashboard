@@ -171,7 +171,7 @@ function VoiceAgentDashboard() {
     const selectedAgent = voiceAgents.find(va => va.name === agent.name);
     
     setScheduleForm({
-      customerName: agent.customer_name || '',
+      customerName: agent.customer || '',
       phoneNumber: agent.phoneNumber,
       topic: agent.topic,
       hour: hours,
