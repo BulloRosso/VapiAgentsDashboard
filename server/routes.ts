@@ -19,8 +19,7 @@ export function registerRoutes(app: Express): Server {
 
   // VAPI webhook endpoint
   app.post("/api/webhook", async (req, res) => {
-    console.log(JSON.stringify(req.body));
-
+    
     const result = messageSchema.safeParse(req.body);
 
     if (!result.success) {
