@@ -5,6 +5,7 @@ import { z } from "zod";
 export const scheduledCall = z.object({
   id: z.number().optional(),
   agent_name: z.string(),
+  customer_name: z.string(),
   call_time: z.string(),
   topic: z.string(),
   phone_number: z.string()

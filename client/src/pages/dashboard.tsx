@@ -209,7 +209,8 @@ function VoiceAgentDashboard() {
         agent_name: selectedAgent?.name || '',
         call_time: callTime,
         topic: scheduleForm.topic || '',
-        phone_number: scheduleForm.phoneNumber || ''
+        phone_number: scheduleForm.phoneNumber || '',
+        customer_name: scheduleForm.customerName // Added customer_name
       };
 
       if (editingAgent) {
@@ -303,7 +304,7 @@ function VoiceAgentDashboard() {
                 <p className="font-semibold text-gray-800">{agent.name}
                 -&gt; {agent.customer}
                 </p>
-                
+
               </div>
             </div>
             {agent.summary && (
