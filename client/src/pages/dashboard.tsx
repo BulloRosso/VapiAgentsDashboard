@@ -168,11 +168,11 @@ function VoiceAgentDashboard() {
   function handleEditScheduled(agent) {
     const [hours, minutes] = agent.scheduledTime.split(':');
     // Find the agent ID from voiceAgents array by matching the name
-    const selectedAgent = voiceAgents.find(va => va.name === agent.agent_name);
+    const selectedAgent = voiceAgents.find(va => va.name === agent.name);
     
     setScheduleForm({
       customerName: agent.customer_name || '',
-      phoneNumber: agent.phone_number,
+      phoneNumber: agent.phoneNumber,
       topic: agent.topic,
       hour: hours,
       minute: minutes,
