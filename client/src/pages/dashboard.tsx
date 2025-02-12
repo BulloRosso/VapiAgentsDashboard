@@ -42,9 +42,22 @@ function VoiceAgentDashboard() {
 
   // Transform logs into the format expected by the UI
   const transformLogsToAgents = (logs: VapiLog[]) => {
+    const { data: voiceAgents = [] } = useQuery({
+      queryKey: ['agents'],
+      queryFn: async () => {
+        const response = await fetch('/api/agents');
+        if (!response.ok) {
+          throw new Error('Failed to fetch agents');
+        }
+        return await response.json();
+      }
+    });
+
+    const agentMap = new Map(voiceAgents.map(agent => [agent.agent_id, agent.name]));
+
     return logs.map(log => ({
       id: log.id,
-      name: log.agent_id || 'Unknown Agent',
+      name: agentMap.get(log.agent_id) || '[unknown agent]',
       status: log.status === 'in_progress' ? 'in_call' : 'finished',
       customer: 'Customer',
       timeInStatus: `${Math.floor(log.duration_seconds / 60)}:${(log.duration_seconds % 60).toString().padStart(2, '0')}`,
