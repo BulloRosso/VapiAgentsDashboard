@@ -29,7 +29,7 @@ function VoiceAgentDashboard() {
   const { data: logs = [] } = useQuery<VapiLog[]>({
     queryKey: ['logs'],
     queryFn: async () => {
-      console.log('Starting logs fetch...');
+      console.log('Starting logs fetch from:', '/api/logs');
       const { data, error } = await supabase
         .from('vapi_logs')
         .select('*')
