@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { messageSchema, insertVapiLogSchema } from "@shared/schema";
+import { messageSchema, insertVapiLogSchema, scheduledCall } from "@shared/schema";
 import { supabase } from "./supabase";
 
 export function registerRoutes(app: Express): Server {
@@ -111,6 +111,75 @@ export function registerRoutes(app: Express): Server {
 
     const call = await storage.createCall(result.data);
     res.json(call);
+  });
+
+  // Get all scheduled calls for today
+  app.get("/api/scheduled-calls-today", async (_req, res) => {
+    const { data, error } = await supabase
+      .from('vapi_scheduled_calls')
+      .select('*')
+      .gte('call_time', new Date().toISOString().split('T')[0])
+      .lt('call_time', new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0])
+      .order('call_time', { ascending: true });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data || []);
+  });
+
+  // Create scheduled call
+  app.post("/api/scheduled-calls", async (req, res) => {
+    const result = scheduledCall.safeParse(req.body);
+    
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+
+    const { data, error } = await supabase
+      .from('vapi_scheduled_calls')
+      .insert([result.data])
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+  });
+
+  // Update scheduled call
+  app.put("/api/scheduled-calls/:id", async (req, res) => {
+    const result = scheduledCall.safeParse(req.body);
+    
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+
+    const { data, error } = await supabase
+      .from('vapi_scheduled_calls')
+      .update(result.data)
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+  });
+
+  // Delete scheduled call
+  app.delete("/api/scheduled-calls/:id", async (req, res) => {
+    const { error } = await supabase
+      .from('vapi_scheduled_calls')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.status(204).send();
   });
 
   const httpServer = createServer(app);

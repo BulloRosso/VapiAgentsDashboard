@@ -110,7 +110,7 @@ function VoiceAgentDashboard() {
     }
   });
 
- 
+
 
   const scheduledAgents = agents.filter(a => a.status === 'scheduled');
   const activeAgents = agents.filter(a => a.status === 'in_call');
@@ -171,13 +171,42 @@ function VoiceAgentDashboard() {
     });
   }
 
-  function handleScheduleSubmit() {
-  
-    handleCloseModal();
-  }
+  const handleScheduleSubmit = async () => {
+    try {
+      const scheduledTime = `${scheduleForm.hour}:${scheduleForm.minute}`;
+      const today = new Date().toISOString().split('T')[0];
+      const callTime = `${today}T${scheduledTime}:00Z`;
+
+      const scheduledCall = {
+        agent_name: scheduleForm.agent,
+        call_time: callTime,
+        topic: scheduleForm.topic,
+        phone_number: scheduleForm.phoneNumber
+      };
+
+      if (editingAgent) {
+        await fetch(`/api/scheduled-calls/${editingAgent.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(scheduledCall)
+        });
+      } else {
+        await fetch('/api/scheduled-calls', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(scheduledCall)
+        });
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['scheduled-calls'] });
+      handleCloseModal();
+    } catch (error) {
+      console.error('Failed to schedule call:', error);
+    }
+  };
 
   function handleDeleteScheduled(agent) {
-    
+
   }
 
   // Component definitions

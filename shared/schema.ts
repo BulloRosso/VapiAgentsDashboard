@@ -2,6 +2,16 @@ import { pgTable, text, serial, timestamp, jsonb, integer, numeric } from "drizz
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+export const scheduledCall = z.object({
+  id: z.number().optional(),
+  agent_name: z.string(),
+  call_time: z.string(),
+  topic: z.string(),
+  phone_number: z.string()
+});
+
+export type ScheduledCall = z.infer<typeof scheduledCall>;
+
 export const callStatus = z.enum(['scheduled', 'in_call', 'waiting_callback', 'finished']);
 export type CallStatus = z.infer<typeof callStatus>;
 
