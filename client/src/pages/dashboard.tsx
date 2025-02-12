@@ -102,10 +102,25 @@ function VoiceAgentDashboard() {
   console.log('Transformed agents:', agents);
 
   useEffect(() => {
-    const unsubscribe = subscribeToCallUpdates(() => {
-      queryClient.invalidateQueries({ queryKey: ['/api/logs'] });
-    });
-    return unsubscribe;
+    const subscription = supabase
+      .channel('vapi_logs_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'vapi_logs'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['logs'] });
+          queryClient.invalidateQueries({ queryKey: ['costs-today'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // State management from voice-agent-dashboard
