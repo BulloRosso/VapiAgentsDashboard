@@ -99,6 +99,9 @@ function VoiceAgentDashboard() {
   const agents = transformLogsToAgents(logs);
  
   useEffect(() => {
+    // Initialize auth first
+    initSupabaseAuth();
+    
     console.log('Setting up Supabase realtime subscription...');
     const subscription = supabase
       .channel('vapi_logs_changes')

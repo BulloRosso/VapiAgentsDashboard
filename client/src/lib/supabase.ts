@@ -2,15 +2,16 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl) {
-  console.warn('Missing Supabase URL');
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('Missing Supabase credentials');
 }
 
-// Initialize with empty auth, will be set after getting JWT
+// Initialize with anon key for initial connection
 export const supabase = createClient(
   supabaseUrl || '',
-  '', // Empty anon key, will use JWT instead
+  supabaseAnonKey || '',
   {
     realtime: {
       params: {
@@ -20,10 +21,17 @@ export const supabase = createClient(
   }
 );
 
-// Function to set JWT token
-export const setSupabaseAuth = async (jwt: string) => {
-  if (jwt) {
-    supabase.realtime.setAuth(jwt);
+// Function to initialize anonymous session and set auth
+export const initSupabaseAuth = async () => {
+  const { data, error } = await supabase.auth.signInAnonymously();
+  
+  if (error) {
+    console.error('Auth error:', error);
+    return;
+  }
+
+  if (data?.session) {
+    supabase.realtime.setAuth(data.session.access_token);
   }
 };
 
