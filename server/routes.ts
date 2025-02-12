@@ -11,6 +11,23 @@ export function registerRoutes(app: Express): Server {
     res.json(calls);
   });
 
+  // Get all agents
+  app.get("/api/agents", async (_req, res) => {
+    console.log('API: Fetching agents from Supabase...');
+    const { data, error } = await supabase
+      .from('vapi_agents')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('API: Error fetching agents:', error);
+      return res.status(500).json({ error: error.message });
+    }
+    
+    console.log('API: Successfully fetched agents:', data);
+    res.json(data || []);
+  });
+
   // Get all logs
   app.get("/api/logs", async (_req, res) => {
     console.log('API: Fetching logs from Supabase...');

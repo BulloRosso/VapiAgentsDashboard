@@ -82,7 +82,20 @@ function VoiceAgentDashboard() {
     agent: ''
   });
 
-  const voiceAgents = ["Leo", "Louis", "Lars", "Lara"];
+  const { data: voiceAgents = [] } = useQuery({
+    queryKey: ['agents'],
+    queryFn: async () => {
+      const response = await fetch('/api/agents');
+      if (!response.ok) {
+        throw new Error('Failed to fetch agents');
+      }
+      const data = await response.json();
+      return data.map(agent => ({
+        id: agent.agent_id,
+        name: agent.name
+      }));
+    }
+  });
 
  
 
@@ -404,8 +417,8 @@ function VoiceAgentDashboard() {
                 </SelectTrigger>
                 <SelectContent>
                   {voiceAgents.map((agent) => (
-                    <SelectItem key={agent} value={agent}>
-                      {agent}
+                    <SelectItem key={agent.id} value={agent.id}>
+                      {agent.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
