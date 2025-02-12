@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -9,8 +10,20 @@ if (!supabaseUrl || !supabaseKey) {
 
 export const supabase = createClient(
   supabaseUrl || '',
-  supabaseKey || ''
+  supabaseKey || '',
+  {
+    realtime: {
+      params: {
+        eventsPerSecond: 10
+      }
+    }
+  }
 );
+
+// Set auth token if needed
+if (supabaseKey) {
+  supabase.realtime.setAuth(supabaseKey);
+}
 
 export const subscribeToCallUpdates = (onUpdate: (payload: any) => void) => {
   const subscription = supabase
