@@ -2,15 +2,15 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.warn('Missing Supabase credentials');
+if (!supabaseUrl) {
+  console.warn('Missing Supabase URL');
 }
 
+// Initialize with empty auth, will be set after getting JWT
 export const supabase = createClient(
   supabaseUrl || '',
-  supabaseKey || '',
+  '', // Empty anon key, will use JWT instead
   {
     realtime: {
       params: {
@@ -20,10 +20,12 @@ export const supabase = createClient(
   }
 );
 
-// Set auth token if needed
-if (supabaseKey) {
-  supabase.realtime.setAuth(supabaseKey);
-}
+// Function to set JWT token
+export const setSupabaseAuth = async (jwt: string) => {
+  if (jwt) {
+    supabase.realtime.setAuth(jwt);
+  }
+};
 
 export const subscribeToCallUpdates = (onUpdate: (payload: any) => void) => {
   const subscription = supabase
