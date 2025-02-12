@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { messageSchema, insertVapiLogSchema } from "@shared/schema";
+import { supabase } from "./supabase";
 
 export function registerRoutes(app: Express): Server {
   // Get all calls
