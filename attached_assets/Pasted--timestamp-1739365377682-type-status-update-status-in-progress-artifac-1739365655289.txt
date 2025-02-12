@@ -1,0 +1,119 @@
+{
+  "timestamp": 1739365377682,
+  "type": "status-update",
+  "status": "in-progress",
+  "artifact": {
+    "messages": [
+      {
+        "role": "system",
+        "message": "Welcome, Leo! You are the friendly and helpful voice of e-ntegration Tagespflege Schweiz. Du sprichst mit dem Kunden in Deutsch.\n\nDeine Aufgabe ist es Informationen von möglichen Geschäftspartnern zu erfragen. Am Ende des Gesprächs benötigen wir folgendes JSON (setze für die Beispieldaten die Daten aus dem Gespräch ein):\n---------\n{\n     \"freie_pflegeplaetze\": 5,\n     \"buchung_ueber:\" \"email\" | \"telefon\",\n     \"kosten_pro_tag\": 80, // Schweizer Franken\n     \"personengruppe_fuer_pflege\": \"Senioren ab 70 Jahren.\"\n}\n--------\n\nWir möchten folgende Informationen in jedem Gespräch von unseren Kunden erfagen:\n* Haben Sie noch freie Pflegeplätze diese Woche?\n  Erwartete Antwort: \"Ja, diese Woche sind noch 4 Plätze frei\"\n\n* Wie können wir einen Pflegeplatz buchen? \n  Erwartete Antwort: \"Das können Sie über eMail oder unser Online-Formular tun\"\n\n* Welche Kosten fallen für einen Tag an?\n  Erwartete Antwort: Ein Betrag in schweizer Franken pro Tag\n\n* Welche personen können an der Tagespflege teiln...",
+        "time": 1739365374552,
+        "secondsFromStart": 0
+      }
+    ],
+    "messagesOpenAIFormatted": [
+      {
+        "role": "system",
+        "content": "Welcome, Leo! You are the friendly and helpful voice of e-ntegration Tagespflege Schweiz. Du sprichst mit dem Kunden in Deutsch.\n\nDeine Aufgabe ist es Informationen von möglichen Geschäftspartnern zu erfragen. Am Ende des Gesprächs benötigen wir folgendes JSON (setze für die Beispieldaten die Daten aus dem Gespräch ein):\n---------\n{\n     \"freie_pflegeplaetze\": 5,\n     \"buchung_ueber:\" \"email\" | \"telefon\",\n     \"kosten_pro_tag\": 80, // Schweizer Franken\n     \"personengruppe_fuer_pflege\": \"Senioren ab 70 Jahren.\"\n}\n--------\n\nWir möchten folgende Informationen in jedem Gespräch von unseren Kunden erfagen:\n* Haben Sie noch freie Pflegeplätze diese Woche?\n  Erwartete Antwort: \"Ja, diese Woche sind noch 4 Plätze frei\"\n\n* Wie können wir einen Pflegeplatz buchen? \n  Erwartete Antwort: \"Das können Sie über eMail oder unser Online-Formular tun\"\n\n* Welche Kosten fallen für einen Tag an?\n  Erwartete Antwort: Ein Betrag in schweizer Franken pro Tag\n\n* Welche personen können an der Tagespflege teiln..."
+      }
+    ]
+  },
+  "call": {
+    "id": "de9c9c71-272d-493a-a555-0d6ae2f55d09",
+    "orgId": "e535f1ab-fbfe-4db0-86a7-91449b9c477b",
+    "createdAt": "2025-02-12T13:02:54.401Z",
+    "updatedAt": "2025-02-12T13:02:54.401Z",
+    "type": "webCall",
+    "monitor": {
+      "listenUrl": "wss://phone-call-websocket.aws-us-west-2-backend-production1.vapi.ai/de9c9c71-272d-493a-a555-0d6ae2f55d09/listen",
+      "controlUrl": "https://phone-call-websocket.aws-us-west-2-backend-production1.vapi.ai/de9c9c71-272d-493a-a555-0d6ae2f55d09/control"
+    },
+    "transport": {
+      "assistantVideoEnabled": false
+    },
+    "webCallUrl": "https://vapi.daily.co/PFPoogNRWkZ77P8DLZQv",
+    "status": "queued",
+    "assistantId": "77248279-497f-4486-acdb-6d3fbd61a785",
+    "assistantOverrides": {
+      "clientMessages": [
+        "transfer-update",
+        "transcript"
+      ]
+    }
+  },
+  "assistant": {
+    "id": "77248279-497f-4486-acdb-6d3fbd61a785",
+    "orgId": "e535f1ab-fbfe-4db0-86a7-91449b9c477b",
+    "name": "Leo",
+    "voice": {
+      "model": "eleven_multilingual_v2",
+      "style": 0.1,
+      "voiceId": "kMdYHZK2wkocJnpZxE08",
+      "provider": "11labs",
+      "stability": 0.3,
+      "similarityBoost": 0.5,
+      "fillerInjectionEnabled": false,
+      "inputPunctuationBoundaries": [
+        ".",
+        "!",
+        "?"
+      ]
+    },
+    "createdAt": "2025-02-10T17:01:17.246Z",
+    "updatedAt": "2025-02-12T11:00:24.708Z",
+    "model": {
+      "model": "gpt-4o-mini",
+      "messages": [
+        {
+          "role": "system",
+          "content": "Welcome, Leo! You are the friendly and helpful voice of e-ntegration Tagespflege Schweiz. Du sprichst mit dem Kunden in Deutsch.\n\nDeine Aufgabe ist es Informationen von möglichen Geschäftspartnern zu erfragen. Am Ende des Gesprächs benötigen wir folgendes JSON (setze für die Beispieldaten die Daten aus dem Gespräch ein):\n---------\n{\n     \"freie_pflegeplaetze\": 5,\n     \"buchung_ueber:\" \"email\" | \"telefon\",\n     \"kosten_pro_tag\": 80, // Schweizer Franken\n     \"personengruppe_fuer_pflege\": \"Senioren ab 70 Jahren.\"\n}\n--------\n\nWir möchten folgende Informationen in jedem Gespräch von unseren Kunden erfagen:\n* Haben Sie noch freie Pflegeplätze diese Woche?\n  Erwartete Antwort: \"Ja, diese Woche sind noch 4 Plätze frei\"\n\n* Wie können wir einen Pflegeplatz buchen? \n  Erwartete Antwort: \"Das können Sie über eMail oder unser Online-Formular tun\"\n\n* Welche Kosten fallen für einen Tag an?\n  Erwartete Antwort: Ein Betrag in schweizer Franken pro Tag\n\n* Welche personen können an der Tagespflege teilnehmen? Gibt es Grenzen bezüglich des Alters?\n   Erwartete Antwort: \"Unser Pflegeangebot richtet sich an Kinder bis zu 14 Jahren\" oder \"Wir bieten Pflegeplätze für Senioren von 60 bis 80 Jahren an\"\n\nAnweisungen:\n* Beginne mit der ersten gesuchten Information\n* Stelle jede Frage nur ein Mal und wiederhole dich nicht\n* Wenn ein Gesprächspartner keine Information hat, bleibt das entsprechende Feld im JSON leer\n* Stelle immer nur eine Frage und warte dann auf die Antwort.\n\nAuf die Frage \"Wer sind Sie eigentlich?\" antwortest Du mit \"Ein KI-Bot mit schweizer Stimme von den eleven labs!\"\n"
+        }
+      ],
+      "provider": "openai",
+      "temperature": 0.4,
+      "emotionRecognitionEnabled": true
+    },
+    "recordingEnabled": false,
+    "firstMessage": "Grüazii, ich bin Leo von der e-ntegration GmbH. Wir möchten unseren Eltern ihr Angebot vorstellen. Dazu hätte ich einige Fragen, wenn Sie gerade 5 Minuten Zeit für mich haben.",
+    "voicemailMessage": "Hi, this is Leo from SmartHome Innovations. Could you please reach back at your earliest convenience?.",
+    "endCallMessage": "Danke, Sie haben mir sehr weitergeholfen! Ihnen noch einen wunderschönen Tag!",
+    "transcriber": {
+      "model": "nova-2",
+      "language": "de-CH",
+      "provider": "deepgram"
+    },
+    "silenceTimeoutSeconds": 10,
+    "clientMessages": [
+      "transcript",
+      "hang",
+      "function-call",
+      "speech-update",
+      "metadata",
+      "conversation-update",
+      "transfer-update"
+    ],
+    "serverMessages": [
+      "end-of-call-report",
+      "status-update",
+      "hang",
+      "function-call"
+    ],
+    "serverUrl": "https://149d18b5-fe3f-4ba0-b982-a82b868464c8-00-24mbvbm32azaf.spock.replit.dev/api/webhook",
+    "endCallPhrases": [
+      "bye for now",
+      "talk soon"
+    ],
+    "maxDurationSeconds": 176,
+    "backchannelingEnabled": false,
+    "backgroundDenoisingEnabled": false,
+    "messagePlan": {
+      "idleMessages": [
+        "Are you still there?"
+      ],
+      "idleTimeoutSeconds": 10.1
+    },
+    "startSpeakingPlan": {
+      "smartEndpointingEnabled": true
+    }
+  }
+}
