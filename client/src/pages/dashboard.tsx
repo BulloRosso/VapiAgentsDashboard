@@ -85,7 +85,7 @@ function VoiceAgentDashboard() {
     return logs.map(log => ({
       id: log.id,
       name: agentMap.get(log.agent_id) || '[unknown agent]',
-      status: log.status === 'in_progress' ? 'in_call' : 'finished',
+      status: log.status ,
       customer: 'Customer',
       timeInStatus: `${Math.floor(log.duration_seconds / 60)}:${(log.duration_seconds % 60).toString().padStart(2, '0')}`,
       duration: log.duration_seconds / 60,
@@ -109,7 +109,6 @@ function VoiceAgentDashboard() {
           { event: '*', schema: 'public', table: 'vapi_logs' },
           (payload) => {
             console.log('Received event type:', payload.eventType);
-            console.log('Full payload:', payload);
             queryClient.invalidateQueries({ queryKey: ['logs'] });
             queryClient.invalidateQueries({ queryKey: ['costs-today'] });
           }
@@ -166,8 +165,8 @@ function VoiceAgentDashboard() {
     scheduledTime: new Date(call.call_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
     timeInStatus: '00:00'
   }));
-  const activeAgents = agents.filter(a => a.status === 'in-progress' || a.status === 'forwarding');
-  const finishedAgents = agents.filter(a => a.status === 'ended' || a.status === 'finished');
+  const activeAgents = agents.filter(a => a.status === 'in_call');
+  const finishedAgents = agents.filter(a => a.status === 'finished');
 
   // Utility functions from voice-agent-dashboard
   function getStatusColor(status) {
