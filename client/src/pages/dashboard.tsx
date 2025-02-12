@@ -173,15 +173,15 @@ function VoiceAgentDashboard() {
 
   const handleScheduleSubmit = async () => {
     try {
-      const scheduledTime = `${scheduleForm.hour}:${scheduleForm.minute}`;
+      const scheduledTime = `${scheduleForm.hour.padStart(2, '0')}:${scheduleForm.minute.padStart(2, '0')}`;
       const today = new Date().toISOString().split('T')[0];
       const callTime = `${today}T${scheduledTime}:00Z`;
 
       const scheduledCall = {
         agent_name: scheduleForm.agent,
         call_time: callTime,
-        topic: scheduleForm.topic,
-        phone_number: scheduleForm.phoneNumber
+        topic: scheduleForm.topic || '',
+        phone_number: scheduleForm.phoneNumber || ''
       };
 
       if (editingAgent) {
