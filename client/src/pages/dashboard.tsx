@@ -196,7 +196,7 @@ function VoiceAgentDashboard() {
     try {
       const scheduledTime = `${scheduleForm.hour.padStart(2, '0')}:${scheduleForm.minute.padStart(2, '0')}`;
       const today = new Date().toISOString().split('T')[0];
-      
+
       // Create date in local timezone
       const localDate = new Date(`${today}T${scheduledTime}:00`);
       // Convert to UTC ISO string
@@ -204,7 +204,7 @@ function VoiceAgentDashboard() {
 
       // Find the agent name from the voiceAgents array
       const selectedAgent = voiceAgents.find(agent => agent.id === scheduleForm.agent);
-      
+
       const scheduledCall = {
         agent_name: selectedAgent?.name || '',
         call_time: callTime,
@@ -233,8 +233,15 @@ function VoiceAgentDashboard() {
     }
   };
 
-  function handleDeleteScheduled(agent) {
-
+  async function handleDeleteScheduled(agent) {
+    try {
+      await fetch(`/api/scheduled-calls/${agent.id}`, {
+        method: 'DELETE'
+      });
+      queryClient.invalidateQueries({ queryKey: ['scheduled-calls'] });
+    } catch (error) {
+      console.error('Failed to delete scheduled call:', error);
+    }
   }
 
   // Component definitions
@@ -253,6 +260,7 @@ function VoiceAgentDashboard() {
                agent.status === 'waiting_callback' ? 'Waiting Callback' :
                'Finished'}
             </span>
+            {agent.status === 'scheduled' && <span className="text-white font-semibold ml-2">{agent.scheduledTime}</span>}
           </div>
           <div className="flex items-center space-x-3">
             {agent.duration && (
@@ -293,7 +301,7 @@ function VoiceAgentDashboard() {
               )}
               <div>
                 <p className="font-semibold text-gray-800">{agent.name}</p>
-                <p className="text-sm text-gray-600">Customer: {agent.customer}</p>
+                {/* Removed Customer: {agent.customer} */}
               </div>
             </div>
             {agent.summary && (
@@ -429,7 +437,7 @@ function VoiceAgentDashboard() {
                 placeholder="Enter customer name"
               />
             </div>
-          <div className="space-y-2">
+            <div className="space-y-2">
               <Label>
                 <div className="flex items-center space-x-2 mb-2">
                   <Phone className="w-4 h-4 text-gray-500" />
