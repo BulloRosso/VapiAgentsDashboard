@@ -41,7 +41,6 @@ export function registerRoutes(app: Express): Server {
       return res.status(500).json({ error: error.message });
     }
     
-    console.log('API: Successfully fetched logs:', data);
     res.json(data || []);
   });
 
