@@ -221,7 +221,19 @@ function VoiceAgentDashboard() {
         {showDetails && (
           <div className="p-4">
             <div className="flex items-center space-x-3">
-              <User className="w-5 h-5 text-gray-500" />
+              {agent.name.startsWith('[') ? (
+                <User className="w-[30px] h-[30px] text-gray-500" />
+              ) : (
+                <img 
+                  src={`/img/avatar-${agent.name.toLowerCase()}.jpg`}
+                  alt={agent.name}
+                  className="w-[30px] h-[30px] rounded-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = '/img/avatar-default.jpg';
+                  }}
+                />
+              )}
               <div>
                 <p className="font-semibold text-gray-800">{agent.name}</p>
                 <p className="text-sm text-gray-600">Customer: {agent.customer}</p>
