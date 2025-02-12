@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 import { Phone, Calendar, Clock, User, CheckCircle2, FileText, Plus, UserPlus, MessageSquare, X } from 'lucide-react';
 import { subscribeToCallUpdates } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';

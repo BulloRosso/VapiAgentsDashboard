@@ -13,8 +13,17 @@ export function registerRoutes(app: Express): Server {
 
   // Get all logs
   app.get("/api/logs", async (_req, res) => {
-    const logs = await storage.getLogs();
-    res.json(logs);
+    const { data, error } = await supabase
+      .from('vapi_logs')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching logs:', error);
+      return res.status(500).json({ error: error.message });
+    }
+    
+    res.json(data || []);
   });
 
   // VAPI webhook endpoint
