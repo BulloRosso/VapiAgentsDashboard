@@ -18,7 +18,6 @@ export function registerRoutes(app: Express): Server {
 
   // VAPI webhook endpoint
   app.post("/api/webhook", async (req, res) => {
-
     console.log(req.body.message);
     
     const result = messageSchema.safeParse(req.body.message);
@@ -31,36 +30,45 @@ export function registerRoutes(app: Express): Server {
 
     try {
       if (message.type === 'status-update') {
-        const log = {
-          status: message.status,
-          agentId: message.call.agentId,
-        };
+        const clientStatus = message.status === 'in-progress' ? 'in_call' : 
+                           message.status === 'forwarding' ? 'waiting_callback' :
+                           message.status === 'ended' ? 'finished' : 'scheduled';
 
-        const result = insertVapiLogSchema.partial().safeParse(log);
-        if (!result.success) {
-          return res.status(400).json({ error: result.error });
-        }
+        const { data, error } = await supabase
+          .from('vapi_logs')
+          .upsert({
+            call_id: message.call.id,
+            vapi_status: message.status,
+            client_status: clientStatus,
+            agent_id: message.call.assistantId,
+          })
+          .select();
 
-        const created = await storage.createLog(result.data);
-        res.json(created);
+        if (error) throw error;
+        res.json(data[0]);
+
       } else if (message.type === 'end-of-call-report') {
-        const log = {
-          status: 'ended',
-          agentId: message.call.agentId,
-          durationSeconds: message.call.duration?.toString(),
-          messages: message.messages,
-          summary: message.summary
-        };
+        const totalCost = message.costs.reduce((sum, item) => sum + item.cost, 0);
+        
+        const { data, error } = await supabase
+          .from('vapi_logs')
+          .upsert({
+            call_id: message.call.id,
+            vapi_status: 'ended',
+            client_status: 'finished',
+            agent_id: message.call.assistantId,
+            duration_seconds: message.durationSeconds,
+            costs: totalCost,
+            transcript: message.transcript,
+            summary: message.summary,
+          })
+          .select();
 
-        const result = insertVapiLogSchema.partial().safeParse(log);
-        if (!result.success) {
-          return res.status(400).json({ error: result.error });
-        }
-
-        const created = await storage.createLog(result.data);
-        res.json(created);
+        if (error) throw error;
+        res.json(data[0]);
       }
     } catch (error) {
+      console.error('Webhook error:', error);
       res.status(500).json({ error: "Failed to process webhook" });
     }
   });
