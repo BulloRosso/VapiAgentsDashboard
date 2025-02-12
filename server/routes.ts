@@ -31,16 +31,11 @@ export function registerRoutes(app: Express): Server {
 
     try {
       if (message.type === 'status-update') {
-        const clientStatus = message.status === 'in-progress' ? 'in_call' : 
-                           message.status === 'forwarding' ? 'waiting_callback' :
-                           message.status === 'ended' ? 'finished' : 'scheduled';
-
         const { data, error } = await supabase
           .from('vapi_logs')
           .upsert({
             call_id: message.call.id,
-            vapi_status: message.status,
-            client_status: clientStatus,
+            status: message.status,
             agent_id: message.call.assistantId,
           })
           .select();
@@ -55,12 +50,11 @@ export function registerRoutes(app: Express): Server {
           .from('vapi_logs')
           .upsert({
             call_id: message.call.id,
-            vapi_status: 'ended',
-            client_status: 'finished',
+            status: 'ended',
             agent_id: message.call.assistantId,
-            duration_seconds: message.durationSeconds,
+            duration_seconds: Math.round(message.durationSeconds),
             costs: totalCost,
-            transcript: message.transcript,
+            messages: message.messages,
             summary: message.summary,
           })
           .select();
