@@ -356,17 +356,19 @@ function VoiceAgentDashboard() {
                   <FileText className="w-4 h-4" />
                   <span>Transcript</span>
                 </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentSummary(agent.summary);
-                    setShowSummaryModal(true);
-                  }}
-                  className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
-                >
-                  <File className="w-4 h-4" />
-                  <span>Summary</span>
-                </button>
+                {agent.status === 'finished' && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentSummary(agent.summary);
+                      setShowSummaryModal(true);
+                    }}
+                    className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
+                  >
+                    <File className="w-4 h-4" />
+                    <span>Summary</span>
+                  </button>
+                )}
               </div>
             )}
           </div>
