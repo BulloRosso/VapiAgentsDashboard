@@ -85,8 +85,9 @@ function VoiceAgentDashboard() {
     return logs.map(log => ({
       id: log.id,
       name: agentMap.get(log.agent_id) || '[unknown agent]',
-      status: log.status ,
-      customer: 'Customer',
+      status: log.status,
+      customer: log.customer_name || 'Customer',
+      topic: log.topic,
       timeInStatus: `${Math.floor(log.duration_seconds / 60)}:${(log.duration_seconds % 60).toString().padStart(2, '0')}`,
       duration: log.duration_seconds / 60,
       summary: log.summary,
