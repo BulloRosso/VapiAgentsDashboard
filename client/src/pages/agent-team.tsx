@@ -14,8 +14,8 @@ export default function AgentTeam() {
   });
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Voice Agent Team</h2>
+    <div className="p-6" style={{ backgroundColor: '#f2f1ea'}}>
+   
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {agents.map((agent) => (
           <Card key={agent.id}>

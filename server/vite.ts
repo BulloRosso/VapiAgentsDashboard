@@ -1,3 +1,4 @@
+// server/vite.ts
 import express, { type Express } from "express";
 import fs from "fs";
 import path, { dirname } from "path";

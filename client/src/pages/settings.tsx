@@ -4,8 +4,8 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
 export default function Settings() {
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Settings</h2>
+    <div className="p-6" style={{ backgroundColor: '#f2f1ea'}}>
+     
       <Card>
         <CardHeader>
           <h3 className="text-lg font-semibold">Voice Agent Configuration</h3>

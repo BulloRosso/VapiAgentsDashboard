@@ -1,8 +1,11 @@
+// server/routes.ts
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { messageSchema, insertVapiLogSchema, scheduledCall } from "@shared/schema";
 import { supabase } from "./supabase";
+import { cronService } from './cron';
+import { z } from 'zod';
 
 export function registerRoutes(app: Express): Server {
   // Get all calls
@@ -128,7 +131,6 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-
   // Schedule new call
   app.post("/api/calls", async (req, res) => {
     const result = insertCallSchema.safeParse(req.body);
@@ -208,6 +210,34 @@ export function registerRoutes(app: Express): Server {
       return res.status(500).json({ error: error.message });
     }
     res.status(204).send();
+  });
+
+  // Get current cron configuration
+  app.get("/api/cron/config", (_req, res) => {
+    const config = cronService.getConfig();
+    res.json(config);
+  });
+
+  // Update cron configuration
+  const cronConfigSchema = z.object({
+    schedule: z.string(),
+    endpoint: z.string().url(),
+    enabled: z.boolean()
+  }).partial();
+
+  app.post("/api/cron/config", (req, res) => {
+    const result = cronConfigSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+
+    try {
+      cronService.updateConfig(result.data);
+      res.json({ message: 'Cron configuration updated successfully' });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
   });
 
   const httpServer = createServer(app);
