@@ -130,7 +130,9 @@ function VoiceAgentDashboard() {
   const [showDetails, setShowDetails] = useState(true);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showMessagesModal, setShowMessagesModal] = useState(false);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [currentMessages, setCurrentMessages] = useState<string | null>(null);
+  const [currentSummary, setCurrentSummary] = useState<string | null>(null);
   const [editingAgent, setEditingAgent] = useState(null);
   const [scheduleForm, setScheduleForm] = useState({
     customerName: '',
@@ -347,17 +349,32 @@ function VoiceAgentDashboard() {
             )}
             {agent.messages && (
               <>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentMessages(agent.messages);
-                    setShowMessagesModal(true);
-                  }}
-                  className="mt-3 flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>Transcript</span>
-                </button>
+                <div className="mt-3 flex space-x-4">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentMessages(agent.messages);
+                      setShowMessagesModal(true);
+                    }}
+                    className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>Transcript</span>
+                  </button>
+                  {agent.summary && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentSummary(agent.summary);
+                        setShowSummaryModal(true);
+                      }}
+                      className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
+                    >
+                      <File className="w-4 h-4" />
+                      <span>Summary</span>
+                    </button>
+                  )}
+                </div>
               </>
             )}
           </div>
@@ -607,6 +624,22 @@ function VoiceAgentDashboard() {
           </div>
           <DialogFooter>
             <Button onClick={() => setShowMessagesModal(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showSummaryModal} onOpenChange={setShowSummaryModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Call Summary</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto p-4">
+            <p className="text-sm whitespace-pre-wrap">{currentSummary}</p>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowSummaryModal(false)}>
               Close
             </Button>
           </DialogFooter>
