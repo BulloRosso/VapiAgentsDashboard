@@ -44,13 +44,13 @@ function VoiceAgentDashboard() {
   const { data: logs = [] } = useQuery<VapiLog[]>({
     queryKey: ['logs'],
     queryFn: async () => {
-      
+
       const response = await fetch('/api/logs');
       if (!response.ok) {
         throw new Error('Failed to fetch logs');
       }
       const data = await response.json();
-     
+
       return data || [];
     }
   });
@@ -94,10 +94,10 @@ function VoiceAgentDashboard() {
     }));
   };
 
- 
+
   // Log the transformed agents
   const agents = transformLogsToAgents(logs);
- 
+
   useEffect(() => {
     // Initialize auth first
     initSupabaseAuth().then(() => {
@@ -422,7 +422,7 @@ function VoiceAgentDashboard() {
                 {humanHandovers}
               </div>
             </div>
-            
+
           </div>
         </div>
         <Tabs defaultValue="schedule" className="mb-4">
