@@ -349,7 +349,7 @@ function VoiceAgentDashboard() {
             )}
             {agent.messages && (
               <>
-                <div className="mt-3 flex space-x-4">
+                <div className="mt-3 flex justify-between items-center">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
