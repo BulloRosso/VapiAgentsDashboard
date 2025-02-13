@@ -361,7 +361,7 @@ function VoiceAgentDashboard() {
                     <FileText className="w-4 h-4" />
                     <span>Transcript</span>
                   </button>
-                  {agent.summary && (
+                  {agent.summary && (agent.status === 'in_call' || agent.status === 'finished') && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
