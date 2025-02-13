@@ -293,10 +293,7 @@ function VoiceAgentDashboard() {
           <div className="flex items-center space-x-3">
             {getStatusIcon(agent.status)}
             <span className="text-white font-semibold">
-              {agent.status === 'in_call' ? 'In Call' :
-               agent.status === 'scheduled' ? '' :
-               agent.status === 'waiting_callback' ? 'Waiting Callback' :
-               'Finished'}
+              {agent.customer}
             </span>
             {agent.status === 'scheduled' && <span className="text-white font-semibold ml-2">{agent.scheduledTime}</span>}
           </div>
