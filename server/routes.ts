@@ -52,14 +52,27 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/logs", async (_req, res) => {
     console.log('API: Fetching logs from Supabase...');
     const { data, error } = await supabase
-      .from('vapi_logs')
-      .select('*')
-      .order('created_at', { ascending: false });
+    .from('vapi_logs')
+    .select(`
+      *,
+      vapi_scheduled_calls!left(
+        topic,
+        customer_name,
+        phone_number
+      )
+    `)
+    .order('created_at', { ascending: false })
     
     if (error) {
       console.error('API: Error fetching logs:', error);
       return res.status(500).json({ error: error.message });
     }
+
+    const flattenedData = data?.map(item => ({
+      ...item,
+      ...item.vapi_scheduled_calls,
+      vapi_scheduled_calls: undefined // Remove the nested object
+    }));
 
     const statusMap = {
       'in-progress': 'in_call',
@@ -68,7 +81,7 @@ export function registerRoutes(app: Express): Server {
       'ended': 'finished'
     };
 
-    const mappedData = (data || []).map(log => ({
+    const mappedData = (flattenedData || []).map(log => ({
       ...log,
       status: statusMap[log.status] || log.status
     }));
