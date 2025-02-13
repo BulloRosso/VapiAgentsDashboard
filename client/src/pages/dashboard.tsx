@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import { Phone, Calendar, Clock, User, CheckCircle2, FileText, Plus, UserPlus, MessageSquare, X } from 'lucide-react';
+import { Phone, Calendar, Clock, User, CheckCircle2, FileText, Plus, UserPlus, MessageSquare, X, File } from 'lucide-react';
 import { initSupabaseAuth, subscribeToCallUpdates } from '@/lib/supabase';
 import { queryClient } from '@/lib/queryClient';
 import type { VapiLog } from '@shared/schema';
@@ -140,6 +140,9 @@ function VoiceAgentDashboard() {
     minute: '00',
     agent: ''
   });
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [currentSummary, setCurrentSummary] = useState<string | null>(null);
+
 
   const { data: voiceAgents = [] } = useQuery({
     queryKey: ['agents'],
@@ -341,24 +344,30 @@ function VoiceAgentDashboard() {
               </div>
             </div>
             {agent.summary && (
-              <div className="mt-3">
-                <p className="text-sm text-gray-700">{agent.summary}</p>
-              </div>
-            )}
-            {agent.messages && (
-              <>
+              <div className="mt-3 flex space-x-4">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setCurrentMessages(agent.messages);
                     setShowMessagesModal(true);
                   }}
-                  className="mt-3 flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
+                  className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
                 >
                   <FileText className="w-4 h-4" />
                   <span>Transcript</span>
                 </button>
-              </>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentSummary(agent.summary);
+                    setShowSummaryModal(true);
+                  }}
+                  className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
+                >
+                  <File className="w-4 h-4" />
+                  <span>Summary</span>
+                </button>
+              </div>
             )}
           </div>
         )}
@@ -592,7 +601,7 @@ function VoiceAgentDashboard() {
               const [role, ...messageParts] = line.split(':');
               const message = messageParts.join(':').trim();
               const isAI = role.trim() === 'AI';
-              
+
               return (
                 <div key={idx} className={`flex ${isAI ? 'justify-start' : 'justify-end'}`}>
                   <div className={`max-w-[80%] p-3 rounded-lg ${
@@ -609,6 +618,20 @@ function VoiceAgentDashboard() {
             <Button onClick={() => setShowMessagesModal(false)}>
               Close
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showSummaryModal} onOpenChange={setShowSummaryModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Call Summary</DialogTitle>
+          </DialogHeader>
+          <div className="p-4">
+            <p>{currentSummary}</p>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowSummaryModal(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
