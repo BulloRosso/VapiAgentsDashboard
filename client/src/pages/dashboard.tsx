@@ -89,7 +89,7 @@ function VoiceAgentDashboard() {
       customer: log.customer_name || 'Customer',
       topic: log.topic,
       timeInStatus: `${Math.floor(log.duration_seconds / 60)}:${(log.duration_seconds % 60).toString().padStart(2, '0')}`,
-      duration: log.duration_seconds / 60,
+      duration_seconds: log.duration_seconds,
       summary: log.summary,
       messages: log.messages
     }));
@@ -301,11 +301,10 @@ function VoiceAgentDashboard() {
             {agent.status === 'scheduled' && <span className="text-white font-semibold ml-2">{agent.scheduledTime}</span>}
           </div>
           <div className="flex items-center space-x-3">
-            {agent.duration && (
+            {agent.duration_seconds && (
               <div className="flex items-center space-x-3 text-sm text-white">
                 <Clock className="w-4 h-4" />
-                <span>{agent.duration.toFixed(1)} min</span>
-                <div className={`w-2 h-2 rounded-full ${getDurationColor(agent.duration)}`} />
+                <span>{agent.duration_seconds}s</span>
               </div>
             )}
             {agent.status === 'scheduled' && (
