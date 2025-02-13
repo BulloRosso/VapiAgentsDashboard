@@ -20,7 +20,26 @@ export default function AgentTeam() {
         {agents.map((agent) => (
           <Card key={agent.id}>
             <CardHeader>
-              <h3 className="text-lg font-semibold">{agent.name}</h3>
+              <div className="flex items-center gap-4">
+                {agent.image_url ? (
+                  <img
+                    src={agent.image_url}
+                    alt={agent.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = '/img/avatar-default.jpg';
+                    }}
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-gray-500 text-lg">{agent.name[0]}</span>
+                  </div>
+                )}
+                <div>
+                  <h3 className="text-lg font-semibold">{agent.name}</h3>
+                  <p className="text-sm text-gray-600">Role: {agent.role || 'Unassigned'}</p>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">Agent ID: {agent.agent_id}</p>
