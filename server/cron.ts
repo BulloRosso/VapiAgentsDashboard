@@ -17,7 +17,7 @@ class CronService {
     this.tasks = new Map();
     this.config = {
       schedule: '*/2 * * * *', // Default: every 2 minutes
-      endpoint: 'https://myendpointtocall',
+      endpoint: 'https://149d18b5-fe3f-4ba0-b982-a82b868464c8-00-24mbvbm32azaf.spock.replit.dev/api/vapi-call',
       enabled: true
     };
   }
