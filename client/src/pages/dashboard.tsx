@@ -336,9 +336,9 @@ function VoiceAgentDashboard() {
               )}
               <div>
                 <p className="font-semibold text-gray-800">{agent.name}
-                  <span style={{ marginLeft: '8px' }}>{String.fromCharCode(8594)}</span> {agent.customer}
+                  <span style={{ marginLeft: '8px' }}>{String.fromCharCode(8594)}</span> {agent.customer_name || agent.customer}
                 </p>
-                <p>{agent.topic}</p>
+                <p className="text-sm text-gray-600">{agent.topic}</p>
               </div>
             </div>
             {agent.summary && (
