@@ -129,6 +129,8 @@ function VoiceAgentDashboard() {
   const [humanHandovers] = useState(0);
   const [showDetails, setShowDetails] = useState(true);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showMessagesModal, setShowMessagesModal] = useState(false);
+  const [currentMessages, setCurrentMessages] = useState<string | null>(null);
   const [editingAgent, setEditingAgent] = useState(null);
   const [scheduleForm, setScheduleForm] = useState({
     customerName: '',
@@ -348,20 +350,19 @@ function VoiceAgentDashboard() {
               </div>
             )}
             {agent.messages && (
-              <div className="mt-3 space-y-2">
-                {typeof agent.messages === 'string' ? (
-                  <div className="text-sm p-2 rounded bg-blue-50 text-blue-700">
-                    {agent.messages}
-                  </div>
-                ) : Array.isArray(agent.messages) && agent.messages.map((msg, idx) => (
-                  <div key={idx} className={`text-sm p-2 rounded ${
-                    msg.role === 'assistant' ? 'bg-blue-50 text-blue-700' : 
-                    'bg-gray-50 text-gray-700'
-                  }`}>
-                    {msg.message}
-                  </div>
-                ))}
-              </div>
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentMessages(agent.messages);
+                    setShowMessagesModal(true);
+                  }}
+                  className="mt-3 flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>Transcript</span>
+                </button>
+              </>
             )}
           </div>
         )}
@@ -579,6 +580,38 @@ function VoiceAgentDashboard() {
             </Button>
             <Button onClick={handleScheduleSubmit}>
               {editingAgent ? 'Save Changes' : 'Schedule Call'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showMessagesModal} onOpenChange={setShowMessagesModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Conversation Transcript</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto p-4 space-y-4">
+            {currentMessages && typeof currentMessages === 'string' && currentMessages.split('\n').map((line, idx) => {
+              if (!line.trim()) return null;
+              const [role, ...messageParts] = line.split(':');
+              const message = messageParts.join(':').trim();
+              const isAI = role.trim() === 'AI';
+              
+              return (
+                <div key={idx} className={`flex ${isAI ? 'justify-start' : 'justify-end'}`}>
+                  <div className={`max-w-[80%] p-3 rounded-lg ${
+                    isAI ? 'bg-blue-100 text-blue-900' : 'bg-gray-100 text-gray-900'
+                  }`}>
+                    <div className="text-xs font-semibold mb-1">{role.trim()}</div>
+                    <div className="text-sm">{message}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowMessagesModal(false)}>
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
