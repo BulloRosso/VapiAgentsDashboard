@@ -256,6 +256,7 @@ export function registerRoutes(app: Express): Server {
       const response = await fetch('https://api.vapi.ai/call', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${process.env.VAPI_API_KEY}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
