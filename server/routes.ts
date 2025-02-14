@@ -260,16 +260,17 @@ export function registerRoutes(app: Express): Server {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          name: scheduledCall.agent_name,
           assistantId: agent.agent_id,
-          customerId: scheduledCall.id,
+          phoneNumberId: "69f4169d-2b2a-4dae-95ed-8ccc86e143f0",
           customer: {
             number: scheduledCall.phone_number
           }
         })
       });
 
-      if (!response.ok) {
+      const data = await response.json();
+      
+      if (!response.ok || data.type !== 'outboundPhoneCall') {
         throw new Error(`VAPI API call failed: ${response.statusText}`);
       }
 
