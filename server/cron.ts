@@ -2,6 +2,7 @@
 import cron from 'node-cron';
 import axios from 'axios';
 import { log } from './vite';
+import { supabase } from './supabase';
 
 interface CronConfig {
   schedule: string;
@@ -40,14 +41,22 @@ class CronService {
 
   private async makeApiCall(): Promise<void> {
     try {
-      const response = await axios.get(this.config.endpoint);
-      log(`API call successful: ${response.status}`, 'cron');
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        log(`API call failed: ${error.message}`, 'cron');
-      } else {
-        log(`Unexpected error during API call: ${error}`, 'cron');
+      const now = new Date().toISOString();
+      const { data, error } = await supabase
+        .from('vapi_scheduled_calls')
+        .select('*')
+        .gte('call_time', now)
+        .eq('is_done', false);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        data.forEach(call => {
+          log(`EXECUTING SCHEDULED CALL for ${call.customer_name} with ${call.agent_name} (${call.call_time})`, 'cron');
+        });
       }
+    } catch (error) {
+      log(`Failed to query scheduled calls: ${error}`, 'cron');
     }
   }
 
