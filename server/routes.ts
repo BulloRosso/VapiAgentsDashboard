@@ -252,6 +252,8 @@ export function registerRoutes(app: Express): Server {
         throw new Error(agentError?.message || 'Agent not found');
       }
 
+      console.log(`Agent ${agent.name} is calling ${scheduledCall.customer_name} at ${scheduledCall.phone_number});`)
+
       // 3. Call VAPI API
       const response = await fetch('https://api.vapi.ai/call', {
         method: 'POST',
@@ -261,7 +263,7 @@ export function registerRoutes(app: Express): Server {
         },
         body: JSON.stringify({
           assistantId: agent.agent_id,
-          phoneNumberId: "69f4169d-2b2a-4dae-95ed-8ccc86e143f0",
+          phoneNumberId: "dcfc2e60-9d68-45ea-8e26-22c79f80287b",
           customer: {
             number: scheduledCall.phone_number
           }
