@@ -2,7 +2,7 @@
 
 A cockpit to view and control the current activity of VAPI voice agents.
 
-[[/doc/doc-1.png|Architecture]]
+![Architecture](/doc/doc-1.png)
 
 ## Tech Stack
 * React/Vite/shadcn
@@ -10,7 +10,7 @@ A cockpit to view and control the current activity of VAPI voice agents.
 * Supabase
 
 ## UI
-[[/doc/doc-2.png|Main tab]]
+![Main Tab)](/doc/doc-2.png)
 
 ## Supabase Data Objects
 
