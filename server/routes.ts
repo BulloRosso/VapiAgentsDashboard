@@ -225,6 +225,63 @@ export function registerRoutes(app: Express): Server {
     res.status(204).send();
   });
 
+  // Endpoint to initiate a call
+  app.post("/api/call", async (req, res) => {
+    const { scheduled_call_id } = req.body;
+
+    try {
+      // 1. Get scheduled call details
+      const { data: scheduledCall, error: scheduledCallError } = await supabase
+        .from('vapi_scheduled_calls')
+        .select('*')
+        .eq('id', scheduled_call_id)
+        .single();
+
+      if (scheduledCallError || !scheduledCall) {
+        throw new Error(scheduledCallError?.message || 'Scheduled call not found');
+      }
+
+      // 2. Get agent ID
+      const { data: agent, error: agentError } = await supabase
+        .from('vapi_agents')
+        .select('agent_id')
+        .eq('name', scheduledCall.agent_name)
+        .single();
+
+      if (agentError || !agent) {
+        throw new Error(agentError?.message || 'Agent not found');
+      }
+
+      // 3. Call VAPI API
+      const response = await fetch('https://vapi.api.ai/call', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: scheduledCall.agent_name,
+          assistantId: agent.agent_id,
+          customerId: scheduledCall.id,
+          customer: {
+            number: scheduledCall.phone_number
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`VAPI API call failed: ${response.statusText}`);
+      }
+
+      // 4. Log the call
+      console.log(`CALL TO ${scheduledCall.phone_number} initiated with agent ${scheduledCall.agent_name}`);
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Call initiation error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Get current cron configuration
   app.get("/api/cron/config", (_req, res) => {
     const config = cronService.getConfig();

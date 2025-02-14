@@ -308,16 +308,41 @@ function VoiceAgentDashboard() {
               </div>
             )}
             {agent.status === 'scheduled' && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete?.(agent);
-                }}
-                className="text-white hover:text-red-200 transition-colors ml-2"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+                <>
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      const button = e.currentTarget;
+                      button.disabled = true;
+                      button.classList.add('opacity-50');
+                      try {
+                        await fetch('/api/call', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ scheduled_call_id: agent.id })
+                        });
+                      } catch (error) {
+                        console.error('Failed to initiate call:', error);
+                        button.disabled = false;
+                        button.classList.remove('opacity-50');
+                      }
+                    }}
+                    className="text-white hover:text-green-200 transition-colors ml-2 rounded-full p-1 hover:bg-green-700/20"
+                    title="Call now"
+                  >
+                    <Phone className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete?.(agent);
+                    }}
+                    className="text-white hover:text-red-200 transition-colors ml-2"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </>
+              )}
           </div>
         </div>
         {showDetails && (
