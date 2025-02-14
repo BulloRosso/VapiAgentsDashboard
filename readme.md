@@ -1,8 +1,19 @@
 # VAPI Example Cockpit
 
-A cockpit to view and control the current activity of VAPI voice agents.
+A cockpit to view and control the current activity of VAPI voice agents. This cockpit
+is all about outbound agents, which are much more complicated than inbound agents (e. g. support bots).
+
+Code for the LinkedIn article https://www.linkedin.com/pulse/how-tame-flock-vapi-voice-agents-ralph-g%C3%B6llner-jfope/
+
+This is a minimal solution to demonstrate the usage of VAPI API endpoints:
 
 ![Architecture](/doc/doc-1.png)
+
+## Required: An Outbound Phone Number
+To be able to schedule alls you need to have an **outbound phone number** set up in VAPI.
+Phone calling requires the consent of the called person in most countries - expect some compliance work 
+before you are able to use such a number! VAPI as of 2025 does not provied outbound numbers
+you have to resort to twilio.com or similar providers.
 
 ## Tech Stack
 * React/Vite/shadcn
