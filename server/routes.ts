@@ -253,7 +253,7 @@ export function registerRoutes(app: Express): Server {
       }
 
       // 3. Call VAPI API
-      const response = await fetch('https://vapi.api.ai/call', {
+      const response = await fetch('https://api.vapi.ai/call', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
