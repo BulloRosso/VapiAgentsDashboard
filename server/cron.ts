@@ -41,18 +41,20 @@ class CronService {
 
   private async makeApiCall(): Promise<void> {
     try {
-      const now = new Date().toISOString();
+      const today = new Date().toISOString().split('T')[0];
+      const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
 
-      log("CHECKING SCHEDULED CALLS >= " + now)
-      
+      log("CHECKING SCHEDULED CALLS between " + today + " and " + tomorrow)
+
       const { data, error } = await supabase
         .from('vapi_scheduled_calls')
         .select('*')
-        .gte('call_time', now)
+        .gte('call_time', today)
+        .lt('call_time', tomorrow)
         .eq('is_done', false);
 
       if (error) throw error;
-      
+
       if (data && data.length > 0) {
         data.forEach(call => {
           log(`EXECUTING SCHEDULED CALL for ${call.customer_name} with ${call.agent_name} (${call.call_time})`, 'cron');
