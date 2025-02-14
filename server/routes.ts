@@ -33,7 +33,7 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.get("/api/agents", async (_req, res) => {
-    console.log('API: Fetching agents from Supabase...');
+  
     const { data, error } = await supabase
       .from('vapi_agents')
       .select('*')
@@ -44,13 +44,12 @@ export function registerRoutes(app: Express): Server {
       return res.status(500).json({ error: error.message });
     }
     
-    console.log('API: Successfully fetched agents:', data);
     res.json(data || []);
   });
 
   // Get all logs
   app.get("/api/logs", async (_req, res) => {
-    console.log('API: Fetching logs from Supabase...');
+  
     const { data, error } = await supabase
     .from('vapi_logs')
     .select(`
@@ -91,7 +90,6 @@ export function registerRoutes(app: Express): Server {
 
   // VAPI webhook endpoint
   app.post("/api/webhook", async (req, res) => {
-    console.log(JSON.stringify(req.body));
 
     const result = messageSchema.safeParse(req.body);
 

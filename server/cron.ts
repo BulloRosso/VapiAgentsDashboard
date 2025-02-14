@@ -42,6 +42,9 @@ class CronService {
   private async makeApiCall(): Promise<void> {
     try {
       const now = new Date().toISOString();
+
+      log("CHECKING SCHEDULED CALLS >= " + now)
+      
       const { data, error } = await supabase
         .from('vapi_scheduled_calls')
         .select('*')
@@ -49,11 +52,13 @@ class CronService {
         .eq('is_done', false);
 
       if (error) throw error;
-
+      
       if (data && data.length > 0) {
         data.forEach(call => {
           log(`EXECUTING SCHEDULED CALL for ${call.customer_name} with ${call.agent_name} (${call.call_time})`, 'cron');
         });
+      } else {
+        log('SCHEDULE: No calls to execute')
       }
     } catch (error) {
       log(`Failed to query scheduled calls: ${error}`, 'cron');
