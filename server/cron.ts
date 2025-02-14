@@ -56,9 +56,18 @@ class CronService {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        data.forEach(call => {
+        for (const call of data) {
           log(`EXECUTING SCHEDULED CALL for ${call.customer_name} with ${call.agent_name} (${call.call_time})`, 'cron');
-        });
+          
+          const { error: updateError } = await supabase
+            .from('vapi_scheduled_calls')
+            .update({ is_done: true })
+            .eq('id', call.id);
+
+          if (updateError) {
+            log(`Failed to mark call ${call.id} as done: ${updateError.message}`, 'cron');
+          }
+        }
       } else {
         log('SCHEDULE: No calls to execute')
       }
